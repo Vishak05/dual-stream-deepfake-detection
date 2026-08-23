@@ -1,45 +1,175 @@
 # dsfnet — Dual-Stream Spatial-Frequency Deepfake Detector
 
-Implements the design in `../../phase2/Phase2_Report_v2.md` (Figures 1-9, Algorithms 1-4):
-a ResNet-18 spatial stream (unmodified from the base paper) fused with a new
-FFT/DCT-based frequency stream, aimed at reducing the false-positive rate
-increase the base paper reports after StyleGAN3 data augmentation.
+A dual-stream deepfake detection model that fuses a ResNet-18 spatial stream
+with a frequency-domain (FFT/DCT) stream, aimed at reducing the false-positive
+rate increase reported when training data is augmented with StyleGAN3-generated
+synthetic faces (Figures 1-9, Algorithms 1-4 — see `docs/` or the accompanying
+report for the full architecture writeup).
 
-## Local development (no GPU, no dataset required)
+- **Spatial stream** — ResNet-18, ImageNet-pretrained, unmodified from the base
+  detection paper.
+- **Frequency stream** — a new patch-wise 2D FFT/DCT log-power spectrum feature
+  extractor + small CNN, designed to catch the periodic spectral artifacts GAN
+  upsampling leaves behind, even when spatial artifacts are visually suppressed.
+- **Fusion classifier** — concatenates both embeddings (768-d) and classifies
+  real vs. fake.
+
+The package (`src/dsfnet/`) is fully unit-tested on CPU with synthetic data —
+no GPU or dataset is required to install it or run the test suite. Producing
+real results (training on actual face datasets) requires a GPU and a real
+dataset, via either of the two methods below.
+
+## Installation
 
 ```bash
+git clone https://github.com/<your-username>/dual-stream-deepfake-detection.git
+cd dual-stream-deepfake-detection
 python -m venv .venv
-.venv\Scripts\pip install -e .[dev]
-.venv\Scripts\python -m pytest -v
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+pip install -e .[dev]
 ```
 
-All tests run on CPU in under a minute using tiny synthetic fixtures — no
-real dataset or GPU is needed to develop or verify this package.
+Run the test suite to confirm the install worked:
 
-## Real training (Google Colab)
+```bash
+pytest -v
+```
 
-This machine has no GPU and insufficient free disk space for the dataset, so
-real dataset acquisition, StyleGAN3 generation, and model training all happen
-in `notebooks/colab_train.ipynb`, never locally:
+All tests run on CPU in under a minute using tiny synthetic fixtures.
 
-1. Push this repo to GitHub.
-2. Open `notebooks/colab_train.ipynb` in Google Colab (Runtime > GPU).
-3. Follow the cells: clone repo, `pip install -e .[colab]`, mount Drive,
-   upload your `kaggle.json` API token, download datasets, generate StyleGAN3
-   images, train both models, run the FPR comparison report.
+---
+
+## Method 1 — Run locally
+
+Requires a CUDA-capable GPU for practical training times (CPU works but is
+slow — expect several hours per full training run instead of minutes), a
+Kaggle account, and several GB of free disk space for the dataset.
+
+### 1. Install with Colab/local extras
+
+```bash
+pip install -e .[colab]   # adds the `kaggle` package for dataset download
+```
+
+### 2. Get a Kaggle API token
+
+Kaggle → Settings → API → "Create New Token" downloads `kaggle.json`. Place it at:
+
+```bash
+mkdir -p ~/.kaggle && cp /path/to/kaggle.json ~/.kaggle/ && chmod 600 ~/.kaggle/kaggle.json
+```
+
+### 3. Download the real/baseline-fake datasets
+
+```bash
+python scripts/download_datasets.py \
+  --kaggle-dataset xhlulu/140k-real-and-fake-faces \
+  --out-dir data/
+```
+
+Repeat `--kaggle-dataset` for additional sources (FFHQ, CelebA, or individual
+GAN-fake datasets) as needed.
+
+### 4. Get StyleGAN3-generated images
+
+Either generate your own (needs a GPU and the NVlabs/stylegan3 repo):
+
+```bash
+git clone https://github.com/NVlabs/stylegan3.git
+python scripts/generate_stylegan3.py \
+  --stylegan3-repo stylegan3 \
+  --checkpoint /path/to/stylegan3-r-ffhq-1024x1024.pkl \
+  --out-dir data/stylegan3 \
+  --num-images 5000
+```
+
+or source a pre-generated StyleGAN3 face dataset instead of running generation
+yourself, if you want to skip this step.
+
+### 5. Build the manifest CSVs
+
+See [Building manifests](#building-manifests) below — produces
+`original_manifest.csv`, `augmented_manifest.csv`, and `test_manifest.csv`.
+
+### 6. Train both models
+
+```bash
+python scripts/train_model.py --manifest data/original_manifest.csv  --model spatial_only --out-dir runs/baseline
+python scripts/train_model.py --manifest data/augmented_manifest.csv --model dual_stream  --out-dir runs/dual_stream
+```
+
+**Output:** each run writes `runs/<name>/<model>.pth` (the trained checkpoint)
+and `runs/<name>/history.json` (per-epoch train/val loss and accuracy).
+
+### 7. Evaluate and compare
+
+```bash
+python scripts/evaluate_models.py \
+  --test-manifest data/test_manifest.csv \
+  --baseline-checkpoint runs/baseline/spatial_only.pth   --baseline-model spatial_only \
+  --candidate-checkpoint runs/dual_stream/dual_stream.pth --candidate-model dual_stream \
+  --out-report runs/fpr_comparison_report.json
+```
+
+**Output:** `runs/fpr_comparison_report.json`, containing full metrics
+(accuracy, AUC, precision, recall, F1, FPR, and the raw confusion-matrix
+counts) for both models side by side, plus a `"verdict"` field —
+`"Improved"` if the candidate's false-positive rate is lower than the
+baseline's, `"Flagged"` otherwise. This file is also printed to stdout.
+
+### 8. (Optional) Generate explanation snapshots
+
+```bash
+python scripts/generate_explanations.py \
+  --checkpoint runs/dual_stream/dual_stream.pth --model dual_stream \
+  --manifest data/test_manifest.csv \
+  --out-dir runs/explanations \
+  --num-samples 10
+```
+
+**Output:** `runs/explanations/gradcam_*.png` (spatial-stream Grad-CAM
+heatmaps) and `spectral_*.png` (frequency-stream spectral maps, dual-stream
+model only) for the first N test images — useful for report/presentation
+figures.
+
+---
+
+## Method 2 — Run in Google Colab
+
+Useful when a local GPU or sufficient local disk space isn't available.
+
+1. Push this repo to GitHub (if you haven't already).
+2. Open `notebooks/colab_train.ipynb` in Google Colab.
+3. Runtime → Change runtime type → GPU.
+4. Run the cells in order:
+   - Clone the repo and `pip install -e .[colab]`.
+   - Mount Google Drive (for persisting datasets/checkpoints across sessions).
+   - Upload your `kaggle.json` API token.
+   - Download datasets via `scripts/download_datasets.py`.
+   - Generate StyleGAN3 images via `scripts/generate_stylegan3.py`.
+   - Build manifests (see [Building manifests](#building-manifests)).
+   - Train both models via `scripts/train_model.py`.
+   - Evaluate and compare via `scripts/evaluate_models.py`.
+
+Outputs are identical to Method 1 — checkpoints, `history.json`, and the FPR
+comparison report — just written to Colab's filesystem (point `--out-dir`
+paths at a Google Drive folder if you want them to persist after the session
+ends).
 
 ### StyleGAN3 checkpoints
 
 Download `stylegan3-r-ffhq-1024x1024.pkl` or `stylegan3-t-ffhq-1024x1024.pkl`
-from the NVlabs/stylegan3 releases and store them in your Google Drive so
-they persist across Colab sessions.
+from the NVlabs/stylegan3 releases and store them in Google Drive so they
+persist across Colab sessions.
 
-### Building manifests
+---
 
-Once real image folders exist (from `scripts/download_datasets.py` and
-`scripts/generate_stylegan3.py`), build the three CSV manifests
-`train_model.py`/`evaluate_models.py` expect, using the functions in
-`dsfnet.data.manifest`:
+## Building manifests
+
+Both methods need three CSV manifests before training: `original_manifest.csv`
+(baseline dataset), `augmented_manifest.csv` (baseline + StyleGAN3 images),
+and `test_manifest.csv` (held-out evaluation set). Build them with the
+functions in `dsfnet.data.manifest`:
 
 ```python
 from pathlib import Path
@@ -48,41 +178,49 @@ from dsfnet.data.manifest import (
 )
 
 original = build_original_manifest(
-    real_sources={"FFHQ": Path("/content/data/ffhq"), "CelebA": Path("/content/data/celeba")},
+    real_sources={"FFHQ": Path("data/ffhq"), "CelebA": Path("data/celeba")},
     fake_sources={
-        "StarGAN": Path("/content/data/fake/stargan"),
-        "GDWCT": Path("/content/data/fake/gdwct"),
-        "AttGAN": Path("/content/data/fake/attgan"),
-        "StyleGAN": Path("/content/data/fake/stylegan"),
-        "StyleGAN2": Path("/content/data/fake/stylegan2"),
+        "StarGAN": Path("data/fake/stargan"),
+        "GDWCT": Path("data/fake/gdwct"),
+        "AttGAN": Path("data/fake/attgan"),
+        "StyleGAN": Path("data/fake/stylegan"),
+        "StyleGAN2": Path("data/fake/stylegan2"),
     },
 )
-write_manifest_csv(original, Path("/content/data/original_manifest.csv"))
+write_manifest_csv(original, Path("data/original_manifest.csv"))
 
-augmented = build_stylegan3_augmented_manifest(original, Path("/content/data/stylegan3"))
-write_manifest_csv(augmented, Path("/content/data/augmented_manifest.csv"))
+augmented = build_stylegan3_augmented_manifest(original, Path("data/stylegan3"))
+write_manifest_csv(augmented, Path("data/augmented_manifest.csv"))
 
 # test_manifest.csv: build similarly from a held-out test image folder,
 # scanned per source with dsfnet.data.manifest.scan_source_folder
 ```
 
+---
+
 ## Repository layout
 
 ```
-src/dsfnet/          importable, unit-tested package
-  data/              transforms, dataset manifest, PyTorch Dataset
-  models/            spatial stream, frequency stream, dual-stream fusion, baseline
-  train.py           training/eval loop (Algorithm 3)
-  evaluate.py        FPR-focused metrics + comparison (Algorithm 4)
-  explain.py         Grad-CAM + spectral visualization
-scripts/             CLI entrypoints, meant to run in Colab
-notebooks/           Colab driver notebook
-tests/               pytest suite (CPU-only, no real data)
+src/dsfnet/                       importable, unit-tested package
+  data/                           transforms, dataset manifest, PyTorch Dataset
+  models/                         spatial stream, frequency stream, dual-stream fusion, baseline
+  train.py                        training/eval loop (Algorithm 3)
+  evaluate.py                     FPR-focused metrics + comparison (Algorithm 4)
+  explain.py                      Grad-CAM + spectral visualization
+scripts/
+  download_datasets.py            Kaggle dataset download
+  generate_stylegan3.py           StyleGAN3 synthetic image generation
+  train_model.py                  train baseline or dual-stream model
+  evaluate_models.py              compare baseline vs. candidate, FPR verdict
+  generate_explanations.py        Grad-CAM / spectral-map snapshots
+notebooks/
+  colab_train.ipynb               end-to-end Colab driver notebook
+tests/                            pytest suite (CPU-only, no real data)
 ```
 
-## Team workflow
+## Contributing
 
-Each teammate clones the repo, runs `pytest` locally before pushing, and CI
-(`.github/workflows/tests.yml`) re-runs the suite on every push/PR. Real
-training runs happen from anyone's Colab session pointed at a shared Google
-Drive folder for datasets/checkpoints — nothing large needs to be committed.
+Run `pytest` locally before pushing — CI (`.github/workflows/tests.yml`)
+re-runs the full suite on every push/PR. Real training runs (Method 1 or
+Method 2) don't need to be reproduced for every code change; only the CPU
+test suite needs to stay green.
