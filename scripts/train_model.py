@@ -20,6 +20,27 @@ _MODELS = {
 }
 
 
+def save_checkpoint(path: Path, model, optimizer: torch.optim.Optimizer, epoch: int, history: list) -> None:
+    """Saves everything needed to resume training after epoch `epoch` completes."""
+    torch.save(
+        {
+            "model_state": model.state_dict(),
+            "optimizer_state": optimizer.state_dict(),
+            "epoch": epoch,
+            "history": history,
+        },
+        path,
+    )
+
+
+def load_checkpoint(path: Path, model, optimizer: torch.optim.Optimizer, device: torch.device) -> tuple[int, list]:
+    """Restores model/optimizer state in place; returns (last_completed_epoch, history)."""
+    checkpoint = torch.load(path, map_location=device)
+    model.load_state_dict(checkpoint["model_state"])
+    optimizer.load_state_dict(checkpoint["optimizer_state"])
+    return checkpoint["epoch"], checkpoint["history"]
+
+
 def build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Train the baseline or dual-stream Deepfake detector.")
     parser.add_argument("--manifest", type=Path, required=True, help="CSV from dsfnet.data.manifest.write_manifest_csv")
@@ -60,12 +81,20 @@ def main() -> None:
     model = _MODELS[args.model]().to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
 
-    history = []
-    for epoch in range(1, args.epochs + 1):
+    checkpoint_path = args.out_dir / "checkpoint.pt"
+    start_epoch = 1
+    history: list = []
+    if checkpoint_path.exists():
+        last_completed_epoch, history = load_checkpoint(checkpoint_path, model, optimizer, device)
+        start_epoch = last_completed_epoch + 1
+        print(f"Resuming from checkpoint: epoch {start_epoch}/{args.epochs} (found {checkpoint_path})", flush=True)
+
+    for epoch in range(start_epoch, args.epochs + 1):
         train_result = train_one_epoch(model, train_loader, optimizer, device)
         val_result = evaluate_loss_accuracy(model, val_loader, device)
         print(f"epoch {epoch}: train_loss={train_result.loss:.4f} val_loss={val_result.loss:.4f} val_acc={val_result.accuracy:.4f}", flush=True)
         history.append({"epoch": epoch, "train_loss": train_result.loss, "val_loss": val_result.loss, "val_accuracy": val_result.accuracy})
+        save_checkpoint(checkpoint_path, model, optimizer, epoch, history)
 
     torch.save(model.state_dict(), args.out_dir / f"{args.model}.pth")
     (args.out_dir / "history.json").write_text(json.dumps(history, indent=2))
