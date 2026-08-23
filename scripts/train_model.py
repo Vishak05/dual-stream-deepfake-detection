@@ -30,6 +30,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--lr", type=float, default=1e-4)
     parser.add_argument("--val-split", type=float, default=0.25)
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--num-workers", type=int, default=4, help="DataLoader worker processes for parallel image loading.")
     return parser
 
 
@@ -47,10 +48,15 @@ def main() -> None:
     train_subset, _ = random_split(full_train, [n_train, n_val], generator=torch.Generator().manual_seed(args.seed))
     _, val_subset = random_split(full_eval, [n_train, n_val], generator=torch.Generator().manual_seed(args.seed))
 
-    train_loader = DataLoader(train_subset, batch_size=args.batch_size, shuffle=True)
-    val_loader = DataLoader(val_subset, batch_size=args.batch_size, shuffle=False)
-
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    loader_kwargs = dict(
+        num_workers=args.num_workers,
+        pin_memory=(device.type == "cuda"),
+        persistent_workers=(args.num_workers > 0),
+    )
+    train_loader = DataLoader(train_subset, batch_size=args.batch_size, shuffle=True, **loader_kwargs)
+    val_loader = DataLoader(val_subset, batch_size=args.batch_size, shuffle=False, **loader_kwargs)
+
     model = _MODELS[args.model]().to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
 
@@ -58,7 +64,7 @@ def main() -> None:
     for epoch in range(1, args.epochs + 1):
         train_result = train_one_epoch(model, train_loader, optimizer, device)
         val_result = evaluate_loss_accuracy(model, val_loader, device)
-        print(f"epoch {epoch}: train_loss={train_result.loss:.4f} val_loss={val_result.loss:.4f} val_acc={val_result.accuracy:.4f}")
+        print(f"epoch {epoch}: train_loss={train_result.loss:.4f} val_loss={val_result.loss:.4f} val_acc={val_result.accuracy:.4f}", flush=True)
         history.append({"epoch": epoch, "train_loss": train_result.loss, "val_loss": val_result.loss, "val_accuracy": val_result.accuracy})
 
     torch.save(model.state_dict(), args.out_dir / f"{args.model}.pth")
