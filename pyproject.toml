@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dsfnet"
+version = "0.1.0"
+description = "Dual-stream spatial-frequency deepfake detector (AI Mini Project, CE23E02)"
+requires-python = ">=3.10"
+dependencies = [
+    "torch>=2.1",
+    "torchvision>=0.16",
+    "numpy>=1.24",
+    "scikit-learn>=1.3",
+    "pillow>=10.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4", "pytest-cov>=4.1"]
+colab = ["kaggle>=1.6"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
