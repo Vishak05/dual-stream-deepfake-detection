@@ -194,6 +194,44 @@ persist across Colab sessions.
 
 ---
 
+## Going from a smoke test to a real run
+
+A reasonable first pass (either method) is to skip StyleGAN3 entirely —
+create an empty `data/stylegan3/` (or `$DATA_DIR/stylegan3` in Colab) so
+`augmented_manifest.csv` builds successfully as a copy of
+`original_manifest.csv` — and run a couple of epochs just to confirm the
+whole pipeline works. Once you're ready to add real StyleGAN3 images and do
+the actual full run, three things need to happen, **in this order**:
+
+1. **Generate or source real StyleGAN3 images** into that same
+   `data/stylegan3/` folder (see [step 4](#4-get-stylegan3-generated-images)
+   above) — it's fine that the folder already exists from the smoke test,
+   the new images just get added alongside whatever (nothing, if you used
+   the empty-placeholder approach) is already there.
+
+2. **Rebuild `augmented_manifest.csv`** by rerunning the manifest-building
+   step — only this one needs rebuilding; `original_manifest.csv` and
+   `test_manifest.csv` don't reference the StyleGAN3 folder, so they're
+   unaffected and don't need to change.
+
+3. **Use a fresh `--out-dir` for the dual-stream model** (e.g.
+   `runs/dual_stream_full` instead of reusing `runs/dual_stream`), *or*
+   delete `runs/dual_stream/checkpoint.pt` before retraining. This matters
+   because of the checkpoint/resume behavior described above: if you reuse
+   the same `--out-dir` as the smoke test, `train_model.py` will see an
+   existing `checkpoint.pt` and "resume" from the epoch the smoke test left
+   off at — except the model at that checkpoint was trained on the *old*
+   (StyleGAN3-empty) manifest, not the real one. It'll silently continue
+   training on the new data without any warning that the model's early
+   epochs came from a different dataset, quietly invalidating the run. A
+   fresh output directory avoids this entirely.
+
+Also bump `--epochs` up from your smoke-test value (e.g. `2`) to the real
+target — `20`, matching the base paper's setting, is the default if you omit
+the flag.
+
+---
+
 ## Building manifests
 
 Both methods need three CSV manifests before training: `original_manifest.csv`
