@@ -53,11 +53,21 @@ pip install -e .[colab]   # adds the `kaggle` package for dataset download
 
 ### 2. Get a Kaggle API token
 
-Kaggle → Settings → API → "Create New Token" downloads `kaggle.json`. Place it at:
+Kaggle's current UI shows your API key as a copyable string rather than
+downloading a `kaggle.json` file directly (Kaggle → Settings → API →
+"Create New Token" — copy the key shown, and note your username, e.g. from
+`kaggle.com/<username>`). Build the file yourself instead:
 
 ```bash
-mkdir -p ~/.kaggle && cp /path/to/kaggle.json ~/.kaggle/ && chmod 600 ~/.kaggle/kaggle.json
+mkdir -p ~/.kaggle
+cat > ~/.kaggle/kaggle.json << 'EOF'
+{"username": "your-kaggle-username", "key": "your-copied-api-key"}
+EOF
+chmod 600 ~/.kaggle/kaggle.json
 ```
+
+If Kaggle's UI does offer a direct `kaggle.json` download for you (this has
+varied over time), that works too — just place it at the same path.
 
 ### 3. Download the real/baseline-fake datasets
 
@@ -98,8 +108,26 @@ python scripts/train_model.py --manifest data/original_manifest.csv  --model spa
 python scripts/train_model.py --manifest data/augmented_manifest.csv --model dual_stream  --out-dir runs/dual_stream
 ```
 
-**Output:** each run writes `runs/<name>/<model>.pth` (the trained checkpoint)
-and `runs/<name>/history.json` (per-epoch train/val loss and accuracy).
+**Output:** each run writes `runs/<name>/<model>.pth` (the final trained
+checkpoint) and `runs/<name>/history.json` (per-epoch train/val loss and
+accuracy).
+
+**Resuming an interrupted run:** `train_model.py` also writes
+`runs/<name>/checkpoint.pt` after *every* epoch (model + optimizer state +
+history so far). If training stops partway through (e.g. a disconnected
+Colab session), just rerun the exact same command with the same `--out-dir`
+— it automatically detects the checkpoint and resumes from the next epoch,
+printing `Resuming from checkpoint: epoch N/total`. At most one epoch's
+work is ever lost. Use a fresh `--out-dir` (or delete `checkpoint.pt`) if
+you want to intentionally restart from scratch instead.
+
+**Data loading speed:** `--num-workers` (default 4) controls how many
+parallel processes load/decode images. Match it to your actual CPU core
+count — passing more workers than available cores can make loading *slower*
+(PyTorch will warn you if this happens); check with `nproc` (Linux/Colab) or
+`os.cpu_count()`. On GPU, training also automatically uses mixed-precision
+(AMP) for a substantial speedup — no flag needed, it's disabled automatically
+on CPU.
 
 ### 7. Evaluate and compare
 
@@ -144,7 +172,9 @@ Useful when a local GPU or sufficient local disk space isn't available.
 4. Run the cells in order:
    - Clone the repo and `pip install -e .[colab]`.
    - Mount Google Drive (for persisting datasets/checkpoints across sessions).
-   - Upload your `kaggle.json` API token.
+   - Create `kaggle.json` from your Kaggle username + copied API key (see
+     [Get a Kaggle API token](#2-get-a-kaggle-api-token) above — Kaggle's UI
+     shows a copyable key rather than a file to upload).
    - Download datasets via `scripts/download_datasets.py`.
    - Generate StyleGAN3 images via `scripts/generate_stylegan3.py`.
    - Build manifests (see [Building manifests](#building-manifests)).
