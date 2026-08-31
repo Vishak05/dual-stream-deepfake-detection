@@ -1,7 +1,14 @@
 import torch
 import torch.nn as nn
 from torch.utils.data import TensorDataset, DataLoader
-from dsfnet.train import train_one_epoch, evaluate_loss_accuracy
+import numpy as np
+import pytest
+
+from dsfnet.train import (
+    evaluate_loss_accuracy,
+    logit_adjustment_vector,
+    train_one_epoch,
+)
 
 
 class _TinyDummyModel(nn.Module):
@@ -53,3 +60,39 @@ def test_evaluate_loss_accuracy_does_not_update_weights():
     evaluate_loss_accuracy(model, loader, device=torch.device("cpu"))
     after = list(model.parameters())
     assert all(torch.equal(b, a) for b, a in zip(before, after))
+
+
+# --- logit adjustment (prior-shift correction) ------------------------------
+
+def test_logit_adjustment_vector_is_the_log_prior():
+    adjustment = logit_adjustment_vector(0.25)
+    assert adjustment.tolist() == pytest.approx([np.log(0.75), np.log(0.25)])
+
+
+def test_logit_adjustment_difference_matches_the_prior_shift():
+    """Training on a 1:1 set instead of a 2:1 set shifts the boundary by ln(2);
+    the adjustment must offset exactly that."""
+    balanced = logit_adjustment_vector(0.5)
+    skewed = logit_adjustment_vector(1 / 3)
+    balanced_gap = (balanced[1] - balanced[0]).item()
+    skewed_gap = (skewed[1] - skewed[0]).item()
+    assert balanced_gap - skewed_gap == pytest.approx(np.log(2.0), abs=1e-6)
+
+
+def test_logit_adjustment_rejects_degenerate_priors():
+    with pytest.raises(ValueError, match="fake_prior"):
+        logit_adjustment_vector(0.0)
+
+
+def test_training_with_logit_adjustment_still_learns():
+    torch.manual_seed(0)
+    model = _TinyDummyModel()
+    loader = _make_learnable_loader()
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-2)
+    adjustment = logit_adjustment_vector(0.3)
+
+    first = train_one_epoch(model, loader, optimizer, torch.device("cpu"), logit_adjustment=adjustment)
+    for _ in range(9):
+        last = train_one_epoch(model, loader, optimizer, torch.device("cpu"), logit_adjustment=adjustment)
+
+    assert last.loss < first.loss
