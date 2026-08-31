@@ -1,18 +1,42 @@
 # dsfnet — Dual-Stream Spatial-Frequency Deepfake Detector
 
 A dual-stream deepfake detection model that fuses a ResNet-18 spatial stream
-with a frequency-domain (FFT/DCT) stream, aimed at reducing the false-positive
-rate increase reported when training data is augmented with StyleGAN3-generated
-synthetic faces (Figures 1-9, Algorithms 1-4 — see `docs/` or the accompanying
-report for the full architecture writeup).
+with a frequency-domain (FFT/DCT) stream, plus a controlled re-analysis of the
+base paper's reported accuracy/false-positive trade-off (Figures 1-9,
+Algorithms 1-5 — see the accompanying report for the full writeup).
+
+Two contributions:
+
+**1. Confound diagnosis.** The base paper reports that StyleGAN3 augmentation
+raises accuracy (68.89% → 82.98%) and recall (58.80% → 81.12%) but also false
+positives (117 → 247 of 2,000 reals, i.e. FPR 5.85% → 12.35%), and attributes
+the cost to the realism of the synthetic images. That comparison is confounded:
+
+- the training fake prior moved 0.333 → 0.500, which shifts the argmax boundary
+  ~0.69 nats toward "fake" for Bayesian reasons alone;
+- the test set is 71% fake, so the augmented model's prior is *closer* to the
+  test prior and part of the accuracy gain is prior matching;
+- perturbations were applied to added fakes but not to reals, while every test
+  image is perturbed, making "degraded ⇒ fake" learnable;
+- AUC rose 8 points (threshold-free) while FPR doubled (at argmax) — the
+  signature of decision-boundary placement, not a representational trade-off.
+
+`scripts/analyze_confounds.py` measures how much of the false-positive rise each
+of these explains, mostly without retraining.
+
+**2. Spectral representation redesign.**
 
 - **Spatial stream** — ResNet-18, ImageNet-pretrained, unmodified from the base
   detection paper.
-- **Frequency stream** — a new patch-wise 2D FFT/DCT log-power spectrum feature
-  extractor + small CNN, designed to catch the periodic spectral artifacts GAN
-  upsampling leaves behind, even when spatial artifacts are visually suppressed.
+- **Frequency stream** — a patch-wise transform that mean-centres and
+  Hann-windows each patch, takes its 2D FFT (or DCT), drops the DC term, and
+  bins the log-power spectrum into `n_bins` *radial* channels. Preserving the
+  spectrum's shape is the point: the earlier version averaged over every
+  frequency bin, reducing each patch to a scalar texture-energy value that
+  cannot represent the periodic upsampling peaks the hypothesis is about. That
+  version is retained as `--freq-variant scalar` for the ablation.
 - **Fusion classifier** — concatenates both embeddings (768-d) and classifies
-  real vs. fake.
+  real vs. fake, with optional logit adjustment for the training class prior.
 
 The package (`src/dsfnet/`) is fully unit-tested on CPU with synthetic data —
 no GPU or dataset is required to install it or run the test suite. Producing
@@ -96,17 +120,65 @@ python scripts/generate_stylegan3.py \
 or source a pre-generated StyleGAN3 face dataset instead of running generation
 yourself, if you want to skip this step.
 
-### 5. Build the manifest CSVs
-
-See [Building manifests](#building-manifests) below — produces
-`original_manifest.csv`, `augmented_manifest.csv`, and `test_manifest.csv`.
-
-### 6. Train both models
+### 5. Standardize every source to one resolution (do this first)
 
 ```bash
-python scripts/train_model.py --manifest data/original_manifest.csv  --model spatial_only --out-dir runs/baseline
-python scripts/train_model.py --manifest data/augmented_manifest.csv --model dual_stream  --out-dir runs/dual_stream
+python scripts/standardize_sources.py \
+  --source FFHQ=data/raw/ffhq --source CelebA=data/raw/celeba \
+  --source StyleGAN2=data/raw/stylegan2 --source StyleGAN3=data/stylegan3 \
+  --out-dir data/standardized --size 256
 ```
+
+**Do not skip this.** FFHQ is 1024², CelebA aligned crops are ≈178×218, and
+StyleGAN3 is generated at 256²/1024². Resizing straight to the 224×224 network
+input applies a *different resampling factor per source*, and resampling
+rewrites high-frequency content — so resize factor would correlate with label
+and the frequency stream could learn the resize instead of the generator. All
+later steps read from `data/standardized/`. A `data_card.json` records the
+original resolutions so the control is auditable.
+
+### 6. Build the manifest CSVs and the fixed test set
+
+See [Building manifests](#building-manifests) below. The test set is
+materialized once with its perturbations baked in, so every model is scored on
+byte-identical images:
+
+```bash
+python scripts/build_test_set.py \
+  --real-source FFHQ=data/standardized/FFHQ \
+  --fake-source StyleGAN2=data/standardized/StyleGAN2 \
+  --per-source 1000 \
+  --out-dir data/test_perturbed --out-manifest data/test_manifest.csv
+```
+
+### 7. Train the run matrix
+
+| Run | Model | Training set | Isolates |
+|---|---|---|---|
+| `base` | `spatial_only` | original | paper baseline |
+| `sg3aug` | `spatial_only` | augmented | reproduces the trade-off |
+| `prior` | `spatial_only` | prior-balanced | realism, prior held fixed |
+| `symm` | `spatial_only` | symmetric | the degraded⇒fake shortcut |
+| `dual` | `dual_stream` | augmented | the proposed model |
+| `scalarabl` | `dual_stream --freq-variant scalar` | augmented | was the redesign needed? |
+| `freqonly` | `frequency_only` | augmented | does the spectrum alone beat chance? |
+
+```bash
+python scripts/train_model.py --manifest data/original_manifest.csv  --model spatial_only --out-dir runs/base
+python scripts/train_model.py --manifest data/augmented_manifest.csv --model spatial_only --out-dir runs/sg3aug
+python scripts/train_model.py --manifest data/prior_manifest.csv     --model spatial_only --out-dir runs/prior
+python scripts/train_model.py --manifest data/symmetric_manifest.csv --model spatial_only --out-dir runs/symm
+python scripts/train_model.py --manifest data/augmented_manifest.csv --model dual_stream  --out-dir runs/dual
+python scripts/train_model.py --manifest data/augmented_manifest.csv --model frequency_only --out-dir runs/freqonly
+```
+
+`sg3aug` is the run the base paper omits — without it, comparing `base` against
+`dual` confounds the architecture change with the dataset change.
+
+Spectral options: `--freq-variant {radial,scalar}`, `--n-bins`,
+`--freq-transform {fft,dct}`, `--no-window`, `--keep-dc`.
+Prior control: `--logit-adjust` trains against `log(class prior)` so models
+trained on differently balanced sets stay comparable at a fixed threshold.
 
 **Output:** each run writes `runs/<name>/<model>.pth` (the final trained
 checkpoint) and `runs/<name>/history.json` (per-epoch train/val loss and
@@ -129,21 +201,55 @@ count — passing more workers than available cores can make loading *slower*
 (AMP) for a substantial speedup — no flag needed, it's disabled automatically
 on CPU.
 
-### 7. Evaluate and compare
+### 8. Evaluate and compare
 
 ```bash
 python scripts/evaluate_models.py \
   --test-manifest data/test_manifest.csv \
-  --baseline-checkpoint runs/baseline/spatial_only.pth   --baseline-model spatial_only \
-  --candidate-checkpoint runs/dual_stream/dual_stream.pth --candidate-model dual_stream \
-  --out-report runs/fpr_comparison_report.json
+  --model base=spatial_only=runs/base/spatial_only.pth \
+  --model sg3aug=spatial_only=runs/sg3aug/spatial_only.pth \
+  --model prior=spatial_only=runs/prior/spatial_only.pth \
+  --model symm=spatial_only=runs/symm/spatial_only.pth \
+  --model dual=dual_stream=runs/dual/dual_stream.pth \
+  --baseline sg3aug --candidate dual \
+  --target-fpr 0.05 \
+  --scores-dir runs/scores --out-report runs/comparison.json
 ```
 
-**Output:** `runs/fpr_comparison_report.json`, containing full metrics
-(accuracy, AUC, precision, recall, F1, FPR, and the raw confusion-matrix
-counts) for both models side by side, plus a `"verdict"` field —
-`"Improved"` if the candidate's false-positive rate is lower than the
-baseline's, `"Flagged"` otherwise. This file is also printed to stdout.
+Models are given as `NAME=TYPE=CHECKPOINT` (`=` rather than `:`, since Windows
+paths contain a drive-letter colon), and any number can be compared.
+
+**Output:** `runs/comparison.json` with, per model, metrics at argmax *and* at
+a 5% false-positive budget, `recall_at_target_fpr`, calibration error, and a
+per-generator breakdown. The `comparison` block reports the verdict at argmax
+alongside **FPR at matched recall** — the criterion that threshold placement
+alone cannot win. Per-model test scores land in `runs/scores/`.
+
+### 9. Decompose the false-positive rise
+
+```bash
+python scripts/analyze_confounds.py \
+  --scores base=runs/scores/base.npz --scores sg3aug=runs/scores/sg3aug.npz \
+  --scores prior=runs/scores/prior.npz --scores symm=runs/scores/symm.npz \
+  --out-report runs/confound_decomposition.json
+```
+
+Attributes the extra false positives to prior shift, threshold placement, the
+augmentation shortcut, and residual realism. The prior and threshold components
+need no retraining — they re-score the saved vectors.
+
+### 10. Figures
+
+```bash
+pip install -e .[viz]
+python scripts/plot_results.py --scores dual=runs/scores/dual.npz \
+  --spectra-manifest data/test_manifest.csv --out-dir runs/figures
+```
+
+ROC overlay, FPR-vs-recall curve, reliability diagram, risk-coverage curve, and
+the real-vs-fake radial spectrum. That last one is the falsification check: if
+the two curves lie on top of each other, the frequency stream has nothing to
+learn and no downstream result should be read as if it did.
 
 ### 8. (Optional) Generate explanation snapshots
 
@@ -234,15 +340,16 @@ the flag.
 
 ## Building manifests
 
-Both methods need three CSV manifests before training: `original_manifest.csv`
-(baseline dataset), `augmented_manifest.csv` (baseline + StyleGAN3 images),
-and `test_manifest.csv` (held-out evaluation set). Build them with the
-functions in `dsfnet.data.manifest`:
+Training needs four manifests -- the base paper's two plus the two controls --
+and `test_manifest.csv` for evaluation. Build them from the **standardized**
+folders (step 5) with the functions in `dsfnet.data.manifest`:
 
 ```python
 from pathlib import Path
 from dsfnet.data.manifest import (
-    build_original_manifest, build_stylegan3_augmented_manifest, write_manifest_csv,
+    build_original_manifest, build_stylegan3_augmented_manifest,
+    build_prior_balanced_manifest, build_symmetric_augmented_manifest,
+    class_counts, write_manifest_csv,
 )
 
 original = build_original_manifest(
@@ -257,12 +364,33 @@ original = build_original_manifest(
 )
 write_manifest_csv(original, Path("data/original_manifest.csv"))
 
-augmented = build_stylegan3_augmented_manifest(original, Path("data/stylegan3"))
+# The base paper's set. Note this also moves the class prior, which is the confound.
+augmented = build_stylegan3_augmented_manifest(original, Path("data/standardized/StyleGAN3"))
 write_manifest_csv(augmented, Path("data/augmented_manifest.csv"))
 
-# test_manifest.csv: build similarly from a held-out test image folder,
-# scanned per source with dsfnet.data.manifest.scan_source_folder
+# Control 1 -- replaces half the original fakes with StyleGAN3 instead of adding
+# them, so realism changes while the real:fake ratio stays put. This is the
+# controlled ablation the base paper claims but does not run.
+prior_balanced = build_prior_balanced_manifest(original, Path("data/standardized/StyleGAN3"))
+write_manifest_csv(prior_balanced, Path("data/prior_manifest.csv"))
+
+# Control 2 -- adds perturbed reals to match the perturbed fakes, removing the
+# "degraded => fake" shortcut. Generate them first:
+#   python scripts/perturb_images.py --in-dir data/standardized/FFHQ \
+#       --out-dir data/perturbed_real --limit 1000
+symmetric = build_symmetric_augmented_manifest(
+    original, Path("data/standardized/StyleGAN3"), Path("data/perturbed_real"),
+)
+write_manifest_csv(symmetric, Path("data/symmetric_manifest.csv"))
+
+# Sanity-check what you built -- class_counts reports the fake prior directly.
+for name, entries in [("original", original), ("augmented", augmented),
+                      ("prior-balanced", prior_balanced), ("symmetric", symmetric)]:
+    print(name, class_counts(entries))
 ```
+
+`test_manifest.csv` comes from `scripts/build_test_set.py` (step 6), not from
+this snippet — it has to be materialized with its perturbations baked in.
 
 ---
 
@@ -270,16 +398,32 @@ write_manifest_csv(augmented, Path("data/augmented_manifest.csv"))
 
 ```
 src/dsfnet/                       importable, unit-tested package
-  data/                           transforms, dataset manifest, PyTorch Dataset
-  models/                         spatial stream, frequency stream, dual-stream fusion, baseline
-  train.py                        training/eval loop (Algorithm 3)
-  evaluate.py                     FPR-focused metrics + comparison (Algorithm 4)
+  data/
+    transforms.py                 augmentation (symmetric), normalization, denormalization
+    manifest.py                   dataset manifests + the prior-balanced/symmetric controls
+    perturbations.py              test-time perturbations (paper Sec. III-A-3)
+    dataset.py                    PyTorch Dataset, optionally yielding source labels
+  models/
+    spectral.py                   Algorithm 1: scalar (v1) and radial (v2) spectra, FFT/DCT
+    frequency_stream.py           Algorithm 2: spectral CNN embedding
+    spatial_stream.py             ResNet-18 backbone (unmodified)
+    dual_stream.py                fusion + classification
+    frequency_only.py             frequency stream + linear head (hypothesis check)
+    baseline.py                   spatial stream + linear head
+  train.py                        training/eval loop (Algorithm 3) + logit adjustment
+  evaluate.py                     metrics, operating points, prior correction, calibration
+  inference.py                    scoring and per-sample score persistence
   explain.py                      Grad-CAM + spectral visualization
 scripts/
+  standardize_sources.py          Phase 0: one resolution for every source
   download_datasets.py            Kaggle dataset download
   generate_stylegan3.py           StyleGAN3 synthetic image generation
-  train_model.py                  train baseline or dual-stream model
-  evaluate_models.py              compare baseline vs. candidate, FPR verdict
+  perturb_images.py               perturbed copies (for the symmetric control)
+  build_test_set.py               materialize the fixed perturbed test set
+  train_model.py                  train any of the three model types
+  evaluate_models.py              compare N models at a matched operating point (Algorithm 4)
+  analyze_confounds.py            attribute the false-positive rise (Algorithm 5)
+  plot_results.py                 ROC, trade-off, reliability, risk-coverage, spectra
   generate_explanations.py        Grad-CAM / spectral-map snapshots
 notebooks/
   colab_train.ipynb               end-to-end Colab driver notebook
