@@ -3,6 +3,7 @@ heatmaps (spatial stream) and spectral-map visualizations (frequency stream,
 dual_stream model only) for a handful of test images — used for report/PPT
 snapshots (Figure 4-style visualizations)."""
 import argparse
+import json
 from pathlib import Path
 
 import numpy as np
@@ -13,12 +14,13 @@ from dsfnet.data.manifest import read_manifest_csv
 from dsfnet.data.transforms import build_eval_transform
 from dsfnet.models.baseline import SpatialOnlyClassifier
 from dsfnet.models.dual_stream import DualStreamNet
-from dsfnet.models.spectral import patch_log_power_spectrum
+from dsfnet.models.frequency_only import FrequencyOnlyClassifier
 from dsfnet.explain import GradCAM, spectral_map_to_image
 
 _MODELS = {
     "spatial_only": SpatialOnlyClassifier,
     "dual_stream": DualStreamNet,
+    "frequency_only": FrequencyOnlyClassifier,
 }
 
 
@@ -47,12 +49,26 @@ def main() -> None:
     args.out_dir.mkdir(parents=True, exist_ok=True)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    model = _MODELS[args.model]().to(device)
+    # Rebuild the frequency stream with the configuration the run was trained
+    # under, otherwise the checkpoint will not load.
+    kwargs = {}
+    run_json = args.checkpoint.parent / "run.json"
+    if args.model in ("dual_stream", "frequency_only") and run_json.exists():
+        run = json.loads(run_json.read_text())
+        kwargs = {
+            "variant": run.get("freq_variant") or "radial",
+            "n_bins": run.get("n_bins") or 16,
+            "transform": run.get("freq_transform") or "fft",
+        }
+    model = _MODELS[args.model](**kwargs).to(device)
     model.load_state_dict(torch.load(args.checkpoint, map_location=device))
     model.eval()
 
-    target_layer = model.spatial.features[-2]  # layer4, before avgpool
-    cam = GradCAM(model, target_layer)
+    # frequency_only has no spatial stream, so there is nothing for Grad-CAM to
+    # attach to.
+    cam = None
+    if hasattr(model, "spatial"):
+        cam = GradCAM(model, model.spatial.features[-2])  # layer4, before avgpool
 
     entries = read_manifest_csv(args.manifest)[: args.num_samples]
     transform = build_eval_transform()
@@ -61,11 +77,14 @@ def main() -> None:
         image = Image.open(entry.path).convert("RGB")
         x = transform(image).unsqueeze(0).to(device)
 
-        heatmap = cam.generate(x, class_idx=args.class_idx)[0]  # (7, 7)
-        _array_to_png(heatmap, args.out_dir / f"gradcam_{i:03d}_{entry.source}_label{entry.label}.png")
+        if cam is not None:
+            heatmap = cam.generate(x, class_idx=args.class_idx)[0]  # (7, 7)
+            _array_to_png(heatmap, args.out_dir / f"gradcam_{i:03d}_{entry.source}_label{entry.label}.png")
 
-        if args.model == "dual_stream":
-            spectral_map = patch_log_power_spectrum(x)
+        if hasattr(model, "frequency"):
+            # Use the stream's own configuration rather than re-deriving it, so the
+            # visualization matches whatever representation the model was trained on.
+            spectral_map = model.frequency.spectral_map(x)
             spectral_img = spectral_map_to_image(spectral_map)
             _array_to_png(spectral_img, args.out_dir / f"spectral_{i:03d}_{entry.source}_label{entry.label}.png")
 

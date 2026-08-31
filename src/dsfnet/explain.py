@@ -32,8 +32,17 @@ class GradCAM:
         return cam.detach().cpu().numpy()
 
 
-def spectral_map_to_image(spectral_map: torch.Tensor) -> np.ndarray:
-    """Normalizes a (B,1,h,w) spectral map to a plottable (h,w) array in [0,1]."""
-    arr = spectral_map.detach().cpu().numpy().squeeze()
+def spectral_map_to_image(spectral_map: torch.Tensor, bin_index: int | None = None) -> np.ndarray:
+    """Normalizes a spectral map to a plottable (h, w) array in [0, 1].
+
+    Accepts both representations: the v1 (B, 1, h, w) scalar map and the radial
+    (B, n_bins, h, w) profile. For the latter, `bin_index` picks one radial
+    frequency band; the default averages across bands.
+    """
+    arr = spectral_map.detach().cpu().numpy()
+    if arr.ndim == 4:
+        arr = arr[0]
+    if arr.ndim == 3:
+        arr = arr[bin_index] if bin_index is not None else arr.mean(axis=0)
     arr = (arr - arr.min()) / (arr.max() - arr.min() + 1e-8)
     return arr
