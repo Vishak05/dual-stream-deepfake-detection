@@ -14,6 +14,11 @@ report for the full architecture writeup).
 - **Fusion classifier** — concatenates both embeddings (768-d) and classifies
   real vs. fake.
 
+Models (`--model`): `spatial_only` (the base paper's ResNet-18),
+`dual_stream` (v1: one mean log-power value per 32×32 patch) and
+`dual_stream_v2` (DSF-Net v2: the 32×32 log-power spectrum averaged over
+patches, which keeps periodic GAN upsampling peaks).
+
 The package (`src/dsfnet/`) is fully unit-tested on CPU with synthetic data —
 no GPU or dataset is required to install it or run the test suite. Producing
 real results (training on actual face datasets) requires a GPU and a real
@@ -306,11 +311,47 @@ write_manifest_csv(augmented, Path("data/augmented_manifest.csv"))
 
 ---
 
+## Comparing against the base paper under its protocol
+
+The base paper (Hafezi et al., IEEE Access 2026) tests on images that each get
+one random degradation (rotation 45+45U°, ×0.5/×2 scaling, blur, mirroring,
+JPEG 50–99, Sec. III-A3). Its "augmented" training set holds 4,000 clean +
+1,000 degraded StyleGAN3 images (Fig. 3). To reproduce both and evaluate the
+proposed fixes:
+
+```bash
+# Degraded StyleGAN3 copies (Sec. III-B) and the paper's training composition
+python scripts/build_perturbed_set.py --mode train-degrade \
+  --manifest data/sg3_to_degrade.csv --out-dir data/stylegan3_train_degraded --out-manifest data/sg3_degraded.csv
+python scripts/build_manifests.py ... --paper-degraded-dir data/stylegan3_train_degraded --out-dir data
+
+# Perturbed test and calibration sets (writes <manifest>_ops.csv too)
+python scripts/build_perturbed_set.py --manifest data/test_full_manifest.csv \
+  --out-dir data/test_perturbed --out-manifest data/test_perturbed_manifest.csv
+python scripts/build_perturbed_set.py --manifest data/valid_manifest.csv --seed 2 \
+  --out-dir data/valid_perturbed --out-manifest data/valid_perturbed_manifest.csv
+
+# Base paper's method vs proposed (label-symmetric augmentation + DSF-Net v2)
+python scripts/train_model.py --manifest data/paper_augmented_manifest.csv --model spatial_only --out-dir runs/paper_repro
+python scripts/train_model.py --manifest data/augmented_manifest.csv --model dual_stream_v2 --robust-aug --out-dir runs/dsfnet_v2_robust
+
+# Evaluate with each model's threshold calibrated to 5% FPR on perturbed real validation images
+python scripts/evaluate_runs.py --test-manifest data/test_perturbed_manifest.csv \
+  --run paper_repro=spatial_only:runs/paper_repro/spatial_only.pth \
+  --run proposed=dual_stream_v2:runs/dsfnet_v2_robust/dual_stream_v2.pth \
+  --reference paper_repro --calibration-manifest data/valid_perturbed_manifest.csv --target-fpr 0.05 \
+  --ops-csv data/test_perturbed_manifest_ops.csv --save-scores runs/scores.npz --out-report runs/evaluation.json
+```
+
+`--robust-aug` applies the degradations to every training image, real or
+fake, so degradation can't act as a "fake" signal. Scores are logit margins
+(fake minus real logit); threshold 0 equals a 0.5 probability.
+
 ## Repository layout
 
 ```
 src/dsfnet/                       importable, unit-tested package
-  data/                           transforms, dataset manifest, PyTorch Dataset
+  data/                           transforms, dataset manifest, PyTorch Dataset, base-paper perturbations
   models/                         spatial stream, frequency stream, dual-stream fusion, baseline
   train.py                        training/eval loop (Algorithm 3)
   evaluate.py                     FPR-focused metrics + comparison (Algorithm 4)
@@ -320,8 +361,9 @@ scripts/
   generate_stylegan3.py           StyleGAN3 synthetic image generation
   train_model.py                  train baseline or dual-stream model
   build_manifests.py              manifests for the 140k real-and-fake-faces layout
+  build_perturbed_set.py          base-paper test perturbations / training degradations
   evaluate_models.py              compare baseline vs. candidate, FPR verdict
-  evaluate_runs.py                compare any number of runs, per-source rates
+  evaluate_runs.py                compare runs: per-source/per-op rates, FPR calibration
   generate_explanations.py        Grad-CAM / spectral-map snapshots
 notebooks/
   colab_train.ipynb               end-to-end Colab driver notebook
