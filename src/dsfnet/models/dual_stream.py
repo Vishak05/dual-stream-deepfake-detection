@@ -9,10 +9,10 @@ class DualStreamNet(nn.Module):
     Existing fusion+classification pattern, modified to accept two input
     streams instead of one."""
 
-    def __init__(self, pretrained_spatial: bool = True, num_classes: int = 2, dropout: float = 0.3):
+    def __init__(self, pretrained_spatial: bool = True, num_classes: int = 2, dropout: float = 0.3, frequency_mode: str = "patch_energy"):
         super().__init__()
         self.spatial = SpatialStream(pretrained=pretrained_spatial)
-        self.frequency = FrequencyStream()
+        self.frequency = FrequencyStream(mode=frequency_mode)
         fused_dim = SpatialStream.EMBED_DIM + FrequencyStream.EMBED_DIM  # 768
         self.classifier = nn.Sequential(
             nn.Linear(fused_dim, 128),

@@ -22,3 +22,18 @@ def test_gradients_flow_into_both_streams():
     logits.sum().backward()
     assert model.spatial.features[0].weight.grad is not None
     assert model.frequency.conv1.weight.grad is not None
+
+
+def test_model_registry_builds_every_model():
+    from dsfnet.models import MODELS
+    assert set(MODELS) == {"spatial_only", "dual_stream", "dual_stream_v2"}
+    v2 = MODELS["dual_stream_v2"](pretrained_spatial=False)
+    assert v2.frequency.mode == "mean_spectrum"
+    assert v2(torch.rand(1, 3, 224, 224)).shape == (1, 2)
+
+
+def test_v1_checkpoint_loads_into_current_dual_stream():
+    # v1 adds no parameters (Identity input norm), so old checkpoints stay loadable.
+    state = DualStreamNet(pretrained_spatial=False).state_dict()
+    DualStreamNet(pretrained_spatial=False).load_state_dict(state)
+    assert not any(k.startswith("frequency.input_norm") for k in state)

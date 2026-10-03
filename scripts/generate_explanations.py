@@ -11,15 +11,9 @@ from PIL import Image
 
 from dsfnet.data.manifest import read_manifest_csv
 from dsfnet.data.transforms import build_eval_transform
-from dsfnet.models.baseline import SpatialOnlyClassifier
-from dsfnet.models.dual_stream import DualStreamNet
-from dsfnet.models.spectral import patch_log_power_spectrum
+from dsfnet.models import MODELS as _MODELS
 from dsfnet.explain import GradCAM, spectral_map_to_image
 
-_MODELS = {
-    "spatial_only": SpatialOnlyClassifier,
-    "dual_stream": DualStreamNet,
-}
 
 
 def build_arg_parser() -> argparse.ArgumentParser:
@@ -64,8 +58,9 @@ def main() -> None:
         heatmap = cam.generate(x, class_idx=args.class_idx)[0]  # (7, 7)
         _array_to_png(heatmap, args.out_dir / f"gradcam_{i:03d}_{entry.source}_label{entry.label}.png")
 
-        if args.model == "dual_stream":
-            spectral_map = patch_log_power_spectrum(x)
+        if hasattr(model, "frequency"):
+            with torch.no_grad():
+                spectral_map = model.frequency.spectral_map(x)
             spectral_img = spectral_map_to_image(spectral_map)
             _array_to_png(spectral_img, args.out_dir / f"spectral_{i:03d}_{entry.source}_label{entry.label}.png")
 

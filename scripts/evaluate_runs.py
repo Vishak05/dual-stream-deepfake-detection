@@ -14,13 +14,8 @@ from dsfnet.data.dataset import DeepfakeImageDataset
 from dsfnet.data.manifest import read_manifest_csv
 from dsfnet.data.transforms import build_eval_transform
 from dsfnet.evaluate import compute_metrics, compare_fpr
-from dsfnet.models.baseline import SpatialOnlyClassifier
-from dsfnet.models.dual_stream import DualStreamNet
+from dsfnet.models import MODELS as _MODELS
 
-_MODELS = {
-    "spatial_only": SpatialOnlyClassifier,
-    "dual_stream": DualStreamNet,
-}
 
 
 def parse_run(spec: str) -> tuple[str, str, Path]:

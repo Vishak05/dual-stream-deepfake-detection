@@ -10,14 +10,9 @@ from torch.utils.data import DataLoader, random_split
 from dsfnet.data.dataset import DeepfakeImageDataset
 from dsfnet.data.manifest import read_manifest_csv
 from dsfnet.data.transforms import build_train_transform, build_eval_transform
-from dsfnet.models.baseline import SpatialOnlyClassifier
-from dsfnet.models.dual_stream import DualStreamNet
+from dsfnet.models import MODELS as _MODELS
 from dsfnet.train import train_one_epoch, evaluate_loss_accuracy
 
-_MODELS = {
-    "spatial_only": SpatialOnlyClassifier,
-    "dual_stream": DualStreamNet,
-}
 
 
 def save_checkpoint(path: Path, model, optimizer: torch.optim.Optimizer, epoch: int, history: list) -> None:

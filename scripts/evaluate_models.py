@@ -12,14 +12,9 @@ from torch.utils.data import DataLoader
 from dsfnet.data.dataset import DeepfakeImageDataset
 from dsfnet.data.manifest import read_manifest_csv
 from dsfnet.data.transforms import build_eval_transform
-from dsfnet.models.baseline import SpatialOnlyClassifier
-from dsfnet.models.dual_stream import DualStreamNet
+from dsfnet.models import MODELS as _MODELS
 from dsfnet.evaluate import compute_metrics, compare_fpr
 
-_MODELS = {
-    "spatial_only": SpatialOnlyClassifier,
-    "dual_stream": DualStreamNet,
-}
 
 
 def build_arg_parser() -> argparse.ArgumentParser:
