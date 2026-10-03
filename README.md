@@ -93,7 +93,19 @@ python scripts/generate_stylegan3.py \
   --num-images 5000
 ```
 
-or source a pre-generated StyleGAN3 face dataset instead of running generation
+Two flags matter for the 140k real-and-fake-faces dataset:
+
+- `--jpeg-quality 95` saves JPEGs at the same quality as that dataset. Without
+  it the images are PNGs, and a model can learn "PNG = fake" from compression
+  traces instead of GAN artifacts.
+- `--no-custom-ops` uses StyleGAN3's pure-PyTorch ops instead of compiling its
+  CUDA plugins. Needed when the CUDA toolkit (`nvcc`) isn't installed, e.g. a
+  pip-only PyTorch install under WSL; about 2 images/s on an RTX 4050 at 256 px.
+
+Use a separate `--seed-start` range (e.g. `--seed-start 100000 --num-images
+1000`) into another folder for held-out StyleGAN3 test images.
+
+Or source a pre-generated StyleGAN3 face dataset instead of running generation
 yourself, if you want to skip this step.
 
 ### 5. Build the manifest CSVs
@@ -144,6 +156,18 @@ python scripts/evaluate_models.py \
 counts) for both models side by side, plus a `"verdict"` field —
 `"Improved"` if the candidate's false-positive rate is lower than the
 baseline's, `"Flagged"` otherwise. This file is also printed to stdout.
+
+To compare more than two runs at once, use `evaluate_runs.py`. It also
+reports, per source, the fraction of images predicted fake — the FPR for real
+sources and the detection rate for each fake source (e.g. held-out StyleGAN3):
+
+```bash
+python scripts/evaluate_runs.py --test-manifest data/test_manifest.csv \
+  --run baseline_original=spatial_only:runs/baseline_original/spatial_only.pth \
+  --run baseline_augmented=spatial_only:runs/baseline_augmented/spatial_only.pth \
+  --run dual_augmented=dual_stream:runs/dual_augmented/dual_stream.pth \
+  --reference baseline_augmented --out-report runs/evaluation_report.json
+```
 
 ### 8. (Optional) Generate explanation snapshots
 
@@ -236,8 +260,24 @@ the flag.
 
 Both methods need three CSV manifests before training: `original_manifest.csv`
 (baseline dataset), `augmented_manifest.csv` (baseline + StyleGAN3 images),
-and `test_manifest.csv` (held-out evaluation set). Build them with the
-functions in `dsfnet.data.manifest`:
+and `test_manifest.csv` (held-out evaluation set).
+
+For the 140k real-and-fake-faces layout (`<root>/{train,test}/{real,fake}/`),
+`scripts/build_manifests.py` builds all three. Labels come from the folder
+names — the Kaggle CSVs use 1 = real, the opposite of dsfnet's 1 = fake:
+
+```bash
+python scripts/build_manifests.py \
+  --dataset-root data/real_vs_fake/real-vs-fake \
+  --stylegan3-dir data/stylegan3 \
+  --stylegan3-test-dir data/stylegan3_test \
+  --out-dir data
+```
+
+`--max-train-per-class N` subsamples the training set for quicker runs.
+
+For other dataset layouts, use the functions in `dsfnet.data.manifest`
+directly:
 
 ```python
 from pathlib import Path
@@ -279,7 +319,9 @@ scripts/
   download_datasets.py            Kaggle dataset download
   generate_stylegan3.py           StyleGAN3 synthetic image generation
   train_model.py                  train baseline or dual-stream model
+  build_manifests.py              manifests for the 140k real-and-fake-faces layout
   evaluate_models.py              compare baseline vs. candidate, FPR verdict
+  evaluate_runs.py                compare any number of runs, per-source rates
   generate_explanations.py        Grad-CAM / spectral-map snapshots
 notebooks/
   colab_train.ipynb               end-to-end Colab driver notebook
