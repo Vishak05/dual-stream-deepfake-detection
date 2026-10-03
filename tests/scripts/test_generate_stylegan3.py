@@ -19,6 +19,8 @@ def test_arg_parser_defaults_and_required_fields(tmp_path):
     assert args.num_images == 5000
     assert args.resolution == 256
     assert args.seed_start == 0
+    assert args.no_custom_ops is False
+    assert args.jpeg_quality is None
 
 
 def test_arg_parser_rejects_invalid_resolution(tmp_path):
