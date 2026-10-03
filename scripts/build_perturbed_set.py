@@ -49,8 +49,12 @@ def main() -> None:
     entries = read_manifest_csv(args.manifest)
     jobs = [(i, e, str(args.out_dir), args.mode, args.seed) for i, e in enumerate(entries)]
 
-    with Pool(args.workers) as pool:
-        results = pool.map(_process, jobs, chunksize=64)
+    if args.workers <= 1:
+        # No fork: forking after PyTorch has started its thread pools can deadlock.
+        results = [_process(job) for job in jobs]
+    else:
+        with Pool(args.workers) as pool:
+            results = pool.map(_process, jobs, chunksize=64)
 
     write_manifest_csv([entry for entry, _ in results], args.out_manifest)
     if args.mode == "test":
