@@ -47,3 +47,28 @@ def test_builds_manifests_with_folder_labels_and_subsampling(tmp_path, monkeypat
     assert all(e.label == 0 for e in original if "/real/" in e.path)
     assert len(augmented) == 9 and sum(e.source == "StyleGAN3" for e in augmented) == 3
     assert len(test) == 5 and [e.source for e in test].count("StyleGAN3") == 1
+
+
+def test_paper_composition_uses_clean_subset_plus_degraded_copies(tmp_path, monkeypatch):
+    root = tmp_path / "real-vs-fake"
+    for split in ("train", "test"):
+        _make_images(root / split / "real", 2)
+        _make_images(root / split / "fake", 2)
+    _make_images(tmp_path / "sg3", 5)
+    _make_images(tmp_path / "sg3_degraded", 2)
+    out = tmp_path / "manifests"
+
+    monkeypatch.setattr(sys, "argv", [
+        "build_manifests.py",
+        "--dataset-root", str(root),
+        "--stylegan3-dir", str(tmp_path / "sg3"),
+        "--paper-degraded-dir", str(tmp_path / "sg3_degraded"),
+        "--paper-clean-count", "3",
+        "--out-dir", str(out),
+    ])
+    build_manifests.main()
+
+    paper = read_manifest_csv(out / "paper_augmented_manifest.csv")
+    sg3 = [e for e in paper if e.source == "StyleGAN3"]
+    assert len(paper) == 4 + 3 + 2
+    assert sum("sg3_degraded" in e.path for e in sg3) == 2

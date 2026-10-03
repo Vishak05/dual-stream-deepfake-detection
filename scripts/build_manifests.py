@@ -20,6 +20,8 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--stylegan3-dir", type=Path, required=True, help="StyleGAN3 images added to the augmented training manifest.")
     parser.add_argument("--stylegan3-test-dir", type=Path, default=None, help="Optional held-out StyleGAN3 images added to the test manifest.")
     parser.add_argument("--out-dir", type=Path, required=True)
+    parser.add_argument("--paper-degraded-dir", type=Path, default=None, help="Degraded StyleGAN3 copies; also writes paper_augmented_manifest.csv = original + the first --paper-clean-count StyleGAN3 images + these copies (the base paper's Fig. 3 composition).")
+    parser.add_argument("--paper-clean-count", type=int, default=4000)
     parser.add_argument("--max-train-per-class", type=int, default=None, help="Randomly subsample each training class to at most N images.")
     parser.add_argument("--seed", type=int, default=42)
     return parser
@@ -52,6 +54,10 @@ def main() -> None:
         test += scan_source_folder(args.stylegan3_test_dir, label=1, source="StyleGAN3")
 
     manifests = {"original_manifest.csv": original, "augmented_manifest.csv": augmented, "test_manifest.csv": test}
+    if args.paper_degraded_dir is not None:
+        clean = scan_source_folder(args.stylegan3_dir, label=1, source="StyleGAN3")[: args.paper_clean_count]
+        degraded = scan_source_folder(args.paper_degraded_dir, label=1, source="StyleGAN3")
+        manifests["paper_augmented_manifest.csv"] = original + clean + degraded
     for name, entries in manifests.items():
         write_manifest_csv(entries, args.out_dir / name)
         n_fake = sum(e.label for e in entries)
