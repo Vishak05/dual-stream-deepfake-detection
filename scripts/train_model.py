@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader, random_split
 
 from dsfnet.data.dataset import DeepfakeImageDataset
 from dsfnet.data.manifest import read_manifest_csv
-from dsfnet.data.transforms import build_train_transform, build_eval_transform
+from dsfnet.data.transforms import build_train_transform, build_eval_transform, build_robust_train_transform
 from dsfnet.models import MODELS as _MODELS
 from dsfnet.train import train_one_epoch, evaluate_loss_accuracy
 
@@ -46,6 +46,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--lr", type=float, default=1e-4)
     parser.add_argument("--val-split", type=float, default=0.25)
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--robust-aug", action="store_true", help="Train with the label-symmetric robustness augmentation (blur, JPEG, scaling, rotation on every image).")
     parser.add_argument("--num-workers", type=int, default=4, help="DataLoader worker processes for parallel image loading.")
     return parser
 
@@ -56,7 +57,8 @@ def main() -> None:
     torch.manual_seed(args.seed)
 
     entries = read_manifest_csv(args.manifest)
-    full_train = DeepfakeImageDataset(entries, transform=build_train_transform())
+    train_transform = build_robust_train_transform() if args.robust_aug else build_train_transform()
+    full_train = DeepfakeImageDataset(entries, transform=train_transform)
     full_eval = DeepfakeImageDataset(entries, transform=build_eval_transform())
 
     n_val = int(len(entries) * args.val_split)

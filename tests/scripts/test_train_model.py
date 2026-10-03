@@ -34,3 +34,14 @@ def test_arg_parser_rejects_unknown_model_name(tmp_path):
         assert False, "expected SystemExit from argparse choices validation"
     except SystemExit:
         pass
+
+
+def test_arg_parser_accepts_v2_model_and_robust_aug(tmp_path):
+    args = train_model.build_arg_parser().parse_args([
+        "--manifest", str(tmp_path / "manifest.csv"),
+        "--model", "dual_stream_v2",
+        "--out-dir", str(tmp_path / "runs" / "v2"),
+        "--robust-aug",
+    ])
+    assert args.model == "dual_stream_v2"
+    assert args.robust_aug is True
