@@ -53,3 +53,18 @@ def test_load_ops_strips_parameters(tmp_path):
     path = tmp_path / "ops.csv"
     path.write_text("path,op\na.jpg,rotation:135\nb.jpg,jpeg:57\n")
     assert evaluate_runs.load_ops(path) == {"a.jpg": "rotation", "b.jpg": "jpeg"}
+
+
+def test_predict_returns_unsaturated_logit_margins():
+    import torch
+
+    class FixedLogits(torch.nn.Module):
+        def forward(self, x):
+            return x  # the "images" here are already (real, fake) logits
+
+    logits = torch.tensor([[0.0, 2.0], [3.0, 1.0], [0.0, 120.0], [0.0, 130.0]])
+    loader = [(logits, torch.zeros(4))]
+    margins = evaluate_runs.predict(FixedLogits(), loader, torch.device("cpu"))
+    assert margins.tolist() == [2.0, -2.0, 120.0, 130.0]
+    # softmax would round both confident images to exactly 1.0; margins keep them apart
+    assert margins[3] > margins[2]

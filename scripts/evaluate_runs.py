@@ -5,7 +5,8 @@ verdict for every run against a chosen reference run (Algorithm 4).
 
 With --calibration-manifest, each run's decision threshold is also set from its
 scores on that manifest's real images so their FPR equals --target-fpr, and
-every metric is reported at that threshold too. --ops-csv adds a breakdown by
+every metric is reported at that threshold too. Scores are logit margins
+(fake minus real logit); the default threshold 0 equals a 0.5 probability. --ops-csv adds a breakdown by
 perturbation (from build_perturbed_set.py); --save-scores keeps per-image scores."""
 import csv
 import argparse
@@ -86,11 +87,14 @@ def _jsonable(metrics) -> dict:
 
 @torch.no_grad()
 def predict(model, loader, device) -> np.ndarray:
-    """Returns each image's softmax probability of being fake."""
+    """Returns each image's logit margin (fake logit - real logit). It ranks
+    images exactly like the softmax fake-probability, with margin 0 = 0.5, but
+    doesn't saturate to 1.0 in float32, so thresholds and AUC aren't distorted
+    by ties among very confident predictions."""
     y_score = []
     for x, _ in loader:
         logits = model(x.to(device)).float()
-        y_score.append(torch.softmax(logits, dim=1)[:, 1].cpu())
+        y_score.append((logits[:, 1] - logits[:, 0]).cpu())
     return torch.cat(y_score).numpy()
 
 
@@ -133,7 +137,7 @@ def main() -> None:
         model.load_state_dict(torch.load(checkpoint, map_location=device))
         model.eval()
         scores[name] = predict(model, loader, device)
-        metrics[name], at_half = evaluate_at(scores[name], 0.5)
+        metrics[name], at_half = evaluate_at(scores[name], 0.0)   # margin 0 == probability 0.5
         results[name] = {"model": model_name, "checkpoint": str(checkpoint), **at_half}
         line = f"{name}: acc={metrics[name].accuracy:.4f} auc={metrics[name].auc:.4f} fpr={metrics[name].fpr:.4f}"
         if calibration_loader is not None:
