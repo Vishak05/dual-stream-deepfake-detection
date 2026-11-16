@@ -1,0 +1,129 @@
+{
+  "test_manifest": "/home/vishak/dsfnet-data/manifests/test_manifest.csv",
+  "reference": "baseline_augmented",
+  "runs": {
+    "baseline_original": {
+      "model": "spatial_only",
+      "checkpoint": "/home/vishak/dsfnet-runs/baseline_original/spatial_only.pth",
+      "metrics": {
+        "accuracy": 0.949952380952381,
+        "auc": 0.9851760954545454,
+        "precision": 0.9969034062531216,
+        "recall": 0.9072727272727272,
+        "f1": 0.9499785826471848,
+        "fpr": 0.0031,
+        "tp": 9980,
+        "fp": 31,
+        "tn": 9969,
+        "fn": 1020
+      },
+      "per_source": {
+        "FFHQ": {
+          "n": 10000,
+          "predicted_fake_rate": 0.0031
+        },
+        "StyleGAN": {
+          "n": 10000,
+          "predicted_fake_rate": 0.9923
+        },
+        "StyleGAN3": {
+          "n": 1000,
+          "predicted_fake_rate": 0.057
+        }
+      },
+      "fpr_verdict_vs_reference": "Improved"
+    },
+    "baseline_augmented": {
+      "model": "spatial_only",
+      "checkpoint": "/home/vishak/dsfnet-runs/baseline_augmented/spatial_only.pth",
+      "metrics": {
+        "accuracy": 0.9939523809523809,
+        "auc": 0.999769109090909,
+        "precision": 0.9927490256503217,
+        "recall": 0.9957272727272727,
+        "f1": 0.9942359188489992,
+        "fpr": 0.008,
+        "tp": 10953,
+        "fp": 80,
+        "tn": 9920,
+        "fn": 47
+      },
+      "per_source": {
+        "FFHQ": {
+          "n": 10000,
+          "predicted_fake_rate": 0.008
+        },
+        "StyleGAN": {
+          "n": 10000,
+          "predicted_fake_rate": 0.9955
+        },
+        "StyleGAN3": {
+          "n": 1000,
+          "predicted_fake_rate": 0.998
+        }
+      }
+    },
+    "dual_original": {
+      "model": "dual_stream",
+      "checkpoint": "/home/vishak/dsfnet-runs/dual_original/dual_stream.pth",
+      "metrics": {
+        "accuracy": 0.9509047619047619,
+        "auc": 0.9847062090909091,
+        "precision": 0.989973459156591,
+        "recall": 0.9155454545454546,
+        "f1": 0.9513059084683323,
+        "fpr": 0.0102,
+        "tp": 10071,
+        "fp": 102,
+        "tn": 9898,
+        "fn": 929
+      },
+      "per_source": {
+        "FFHQ": {
+          "n": 10000,
+          "predicted_fake_rate": 0.0102
+        },
+        "StyleGAN": {
+          "n": 10000,
+          "predicted_fake_rate": 0.9953
+        },
+        "StyleGAN3": {
+          "n": 1000,
+          "predicted_fake_rate": 0.118
+        }
+      },
+      "fpr_verdict_vs_reference": "Flagged"
+    },
+    "dual_augmented": {
+      "model": "dual_stream",
+      "checkpoint": "/home/vishak/dsfnet-runs/dual_augmented/dual_stream.pth",
+      "metrics": {
+        "accuracy": 0.9931904761904762,
+        "auc": 0.9997769636363636,
+        "precision": 0.9905123339658444,
+        "recall": 0.9965454545454545,
+        "f1": 0.9935197353514298,
+        "fpr": 0.0105,
+        "tp": 10962,
+        "fp": 105,
+        "tn": 9895,
+        "fn": 38
+      },
+      "per_source": {
+        "FFHQ": {
+          "n": 10000,
+          "predicted_fake_rate": 0.0105
+        },
+        "StyleGAN": {
+          "n": 10000,
+          "predicted_fake_rate": 0.9968
+        },
+        "StyleGAN3": {
+          "n": 1000,
+          "predicted_fake_rate": 0.994
+        }
+      },
+      "fpr_verdict_vs_reference": "Flagged"
+    }
+  }
+}

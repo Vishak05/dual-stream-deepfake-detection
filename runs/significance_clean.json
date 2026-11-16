@@ -1,0 +1,315 @@
+{
+  "per_source_detection_ci": {
+    "baseline_original": {
+      "FFHQ": {
+        "rate": 5.2,
+        "ci95": [
+          4.7,
+          5.6
+        ]
+      },
+      "StyleGAN": {
+        "rate": 99.9,
+        "ci95": [
+          99.9,
+          100.0
+        ]
+      },
+      "StyleGAN2": {
+        "rate": 64.9,
+        "ci95": [
+          61.9,
+          67.8
+        ]
+      },
+      "StyleGAN3": {
+        "rate": 34.7,
+        "ci95": [
+          31.8,
+          37.7
+        ]
+      },
+      "StyleGAN3-t": {
+        "rate": 33.5,
+        "ci95": [
+          30.6,
+          36.5
+        ]
+      }
+    },
+    "baseline_augmented": {
+      "FFHQ": {
+        "rate": 5.1,
+        "ci95": [
+          4.7,
+          5.5
+        ]
+      },
+      "StyleGAN": {
+        "rate": 99.9,
+        "ci95": [
+          99.8,
+          99.9
+        ]
+      },
+      "StyleGAN2": {
+        "rate": 79.5,
+        "ci95": [
+          76.9,
+          81.9
+        ]
+      },
+      "StyleGAN3": {
+        "rate": 99.9,
+        "ci95": [
+          99.4,
+          100.0
+        ]
+      },
+      "StyleGAN3-t": {
+        "rate": 99.4,
+        "ci95": [
+          98.7,
+          99.7
+        ]
+      }
+    },
+    "dual_augmented": {
+      "FFHQ": {
+        "rate": 4.7,
+        "ci95": [
+          4.3,
+          5.1
+        ]
+      },
+      "StyleGAN": {
+        "rate": 100.0,
+        "ci95": [
+          99.9,
+          100.0
+        ]
+      },
+      "StyleGAN2": {
+        "rate": 78.0,
+        "ci95": [
+          75.3,
+          80.5
+        ]
+      },
+      "StyleGAN3": {
+        "rate": 100.0,
+        "ci95": [
+          99.6,
+          100.0
+        ]
+      },
+      "StyleGAN3-t": {
+        "rate": 99.3,
+        "ci95": [
+          98.6,
+          99.7
+        ]
+      }
+    },
+    "paper_repro": {
+      "FFHQ": {
+        "rate": 5.0,
+        "ci95": [
+          4.6,
+          5.5
+        ]
+      },
+      "StyleGAN": {
+        "rate": 99.8,
+        "ci95": [
+          99.7,
+          99.9
+        ]
+      },
+      "StyleGAN2": {
+        "rate": 73.7,
+        "ci95": [
+          70.9,
+          76.3
+        ]
+      },
+      "StyleGAN3": {
+        "rate": 100.0,
+        "ci95": [
+          99.6,
+          100.0
+        ]
+      },
+      "StyleGAN3-t": {
+        "rate": 99.4,
+        "ci95": [
+          98.7,
+          99.7
+        ]
+      }
+    },
+    "baseline_robust": {
+      "FFHQ": {
+        "rate": 4.7,
+        "ci95": [
+          4.3,
+          5.2
+        ]
+      },
+      "StyleGAN": {
+        "rate": 99.8,
+        "ci95": [
+          99.7,
+          99.9
+        ]
+      },
+      "StyleGAN2": {
+        "rate": 84.7,
+        "ci95": [
+          82.3,
+          86.8
+        ]
+      },
+      "StyleGAN3": {
+        "rate": 97.8,
+        "ci95": [
+          96.7,
+          98.5
+        ]
+      },
+      "StyleGAN3-t": {
+        "rate": 90.8,
+        "ci95": [
+          88.8,
+          92.4
+        ]
+      }
+    },
+    "dsfnet_v2": {
+      "FFHQ": {
+        "rate": 4.6,
+        "ci95": [
+          4.2,
+          5.0
+        ]
+      },
+      "StyleGAN": {
+        "rate": 100.0,
+        "ci95": [
+          99.9,
+          100.0
+        ]
+      },
+      "StyleGAN2": {
+        "rate": 74.8,
+        "ci95": [
+          72.0,
+          77.4
+        ]
+      },
+      "StyleGAN3": {
+        "rate": 99.9,
+        "ci95": [
+          99.4,
+          100.0
+        ]
+      },
+      "StyleGAN3-t": {
+        "rate": 99.9,
+        "ci95": [
+          99.4,
+          100.0
+        ]
+      }
+    },
+    "dsfnet_v2_robust": {
+      "FFHQ": {
+        "rate": 4.3,
+        "ci95": [
+          3.9,
+          4.7
+        ]
+      },
+      "StyleGAN": {
+        "rate": 99.8,
+        "ci95": [
+          99.7,
+          99.9
+        ]
+      },
+      "StyleGAN2": {
+        "rate": 87.1,
+        "ci95": [
+          84.9,
+          89.0
+        ]
+      },
+      "StyleGAN3": {
+        "rate": 97.4,
+        "ci95": [
+          96.2,
+          98.2
+        ]
+      },
+      "StyleGAN3-t": {
+        "rate": 90.8,
+        "ci95": [
+          88.8,
+          92.4
+        ]
+      }
+    }
+  },
+  "pairs": {
+    "dsfnet_v2_robust vs paper_repro": {
+      "a_right_b_wrong": 589,
+      "a_wrong_b_right": 492,
+      "mcnemar_p": 0.003502161842588372,
+      "auc_diff": 0.0007,
+      "auc_diff_ci95": [
+        0.0,
+        0.0013
+      ]
+    },
+    "baseline_robust vs paper_repro": {
+      "a_right_b_wrong": 560,
+      "a_wrong_b_right": 527,
+      "mcnemar_p": 0.3317531625430055,
+      "auc_diff": 0.0001,
+      "auc_diff_ci95": [
+        -0.0006,
+        0.0007
+      ]
+    },
+    "dsfnet_v2_robust vs baseline_robust": {
+      "a_right_b_wrong": 457,
+      "a_wrong_b_right": 393,
+      "mcnemar_p": 0.030704442329625107,
+      "auc_diff": 0.0006,
+      "auc_diff_ci95": [
+        0.0001,
+        0.0011
+      ]
+    },
+    "dsfnet_v2 vs baseline_augmented": {
+      "a_right_b_wrong": 442,
+      "a_wrong_b_right": 433,
+      "mcnemar_p": 0.7868145693954502,
+      "auc_diff": -0.0006,
+      "auc_diff_ci95": [
+        -0.0011,
+        -0.0001
+      ]
+    },
+    "paper_repro vs baseline_augmented": {
+      "a_right_b_wrong": 408,
+      "a_wrong_b_right": 470,
+      "mcnemar_p": 0.03952775178506895,
+      "auc_diff": -0.0011,
+      "auc_diff_ci95": [
+        -0.0016,
+        -0.0007
+      ]
+    }
+  }
+}

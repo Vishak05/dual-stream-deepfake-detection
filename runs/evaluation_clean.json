@@ -1,0 +1,558 @@
+{
+  "test_manifest": "/home/vishak/dsfnet-data/manifests/test_full_manifest.csv",
+  "reference": "paper_repro",
+  "runs": {
+    "baseline_original": {
+      "model": "spatial_only",
+      "checkpoint": "/home/vishak/dsfnet-runs/baseline_original/spatial_only.pth",
+      "threshold": 0.0,
+      "metrics": {
+        "accuracy": 0.8809130434782608,
+        "auc": 0.9680973576923078,
+        "precision": 0.996996996996997,
+        "recall": 0.7916923076923077,
+        "f1": 0.8825622775800712,
+        "fpr": 0.0031,
+        "tp": 10292,
+        "fp": 31,
+        "tn": 9969,
+        "fn": 2708
+      },
+      "per_source": {
+        "FFHQ": {
+          "n": 10000,
+          "predicted_fake_rate": 0.0031
+        },
+        "StyleGAN": {
+          "n": 10000,
+          "predicted_fake_rate": 0.9923
+        },
+        "StyleGAN2": {
+          "n": 1000,
+          "predicted_fake_rate": 0.252
+        },
+        "StyleGAN3": {
+          "n": 1000,
+          "predicted_fake_rate": 0.057
+        },
+        "StyleGAN3-t": {
+          "n": 1000,
+          "predicted_fake_rate": 0.06
+        }
+      },
+      "calibrated": {
+        "threshold": -5.8070716847910155,
+        "metrics": {
+          "accuracy": 0.9047391304347826,
+          "auc": 0.9680973576923078,
+          "precision": 0.9564225994426147,
+          "recall": 0.8711538461538462,
+          "f1": 0.9117990419065255,
+          "fpr": 0.0516,
+          "tp": 11325,
+          "fp": 516,
+          "tn": 9484,
+          "fn": 1675
+        },
+        "per_source": {
+          "FFHQ": {
+            "n": 10000,
+            "predicted_fake_rate": 0.0516
+          },
+          "StyleGAN": {
+            "n": 10000,
+            "predicted_fake_rate": 0.9994
+          },
+          "StyleGAN2": {
+            "n": 1000,
+            "predicted_fake_rate": 0.649
+          },
+          "StyleGAN3": {
+            "n": 1000,
+            "predicted_fake_rate": 0.347
+          },
+          "StyleGAN3-t": {
+            "n": 1000,
+            "predicted_fake_rate": 0.335
+          }
+        },
+        "target_fpr": 0.05,
+        "calibration_fpr": 0.05
+      },
+      "fpr_verdict_vs_reference": "Improved"
+    },
+    "baseline_augmented": {
+      "model": "spatial_only",
+      "checkpoint": "/home/vishak/dsfnet-runs/baseline_augmented/spatial_only.pth",
+      "threshold": 0.0,
+      "metrics": {
+        "accuracy": 0.9724347826086956,
+        "auc": 0.9966491692307693,
+        "precision": 0.9936132843685135,
+        "recall": 0.9573846153846154,
+        "f1": 0.9751625793308784,
+        "fpr": 0.008,
+        "tp": 12446,
+        "fp": 80,
+        "tn": 9920,
+        "fn": 554
+      },
+      "per_source": {
+        "FFHQ": {
+          "n": 10000,
+          "predicted_fake_rate": 0.008
+        },
+        "StyleGAN": {
+          "n": 10000,
+          "predicted_fake_rate": 0.9955
+        },
+        "StyleGAN2": {
+          "n": 1000,
+          "predicted_fake_rate": 0.513
+        },
+        "StyleGAN3": {
+          "n": 1000,
+          "predicted_fake_rate": 0.998
+        },
+        "StyleGAN3-t": {
+          "n": 1000,
+          "predicted_fake_rate": 0.98
+        }
+      },
+      "calibrated": {
+        "threshold": -3.7401607026590575,
+        "metrics": {
+          "accuracy": 0.968304347826087,
+          "auc": 0.9966491692307693,
+          "precision": 0.9618366578848325,
+          "recall": 0.9829230769230769,
+          "f1": 0.9722655506943123,
+          "fpr": 0.0507,
+          "tp": 12778,
+          "fp": 507,
+          "tn": 9493,
+          "fn": 222
+        },
+        "per_source": {
+          "FFHQ": {
+            "n": 10000,
+            "predicted_fake_rate": 0.0507
+          },
+          "StyleGAN": {
+            "n": 10000,
+            "predicted_fake_rate": 0.999
+          },
+          "StyleGAN2": {
+            "n": 1000,
+            "predicted_fake_rate": 0.795
+          },
+          "StyleGAN3": {
+            "n": 1000,
+            "predicted_fake_rate": 0.999
+          },
+          "StyleGAN3-t": {
+            "n": 1000,
+            "predicted_fake_rate": 0.994
+          }
+        },
+        "target_fpr": 0.05,
+        "calibration_fpr": 0.05
+      },
+      "fpr_verdict_vs_reference": "Improved"
+    },
+    "dual_augmented": {
+      "model": "dual_stream",
+      "checkpoint": "/home/vishak/dsfnet-runs/dual_augmented/dual_stream.pth",
+      "threshold": 0.0,
+      "metrics": {
+        "accuracy": 0.9733478260869565,
+        "auc": 0.9965484615384615,
+        "precision": 0.9916646820671589,
+        "recall": 0.9609230769230769,
+        "f1": 0.976051881079814,
+        "fpr": 0.0105,
+        "tp": 12492,
+        "fp": 105,
+        "tn": 9895,
+        "fn": 508
+      },
+      "per_source": {
+        "FFHQ": {
+          "n": 10000,
+          "predicted_fake_rate": 0.0105
+        },
+        "StyleGAN": {
+          "n": 10000,
+          "predicted_fake_rate": 0.9968
+        },
+        "StyleGAN2": {
+          "n": 1000,
+          "predicted_fake_rate": 0.548
+        },
+        "StyleGAN3": {
+          "n": 1000,
+          "predicted_fake_rate": 0.994
+        },
+        "StyleGAN3-t": {
+          "n": 1000,
+          "predicted_fake_rate": 0.982
+        }
+      },
+      "calibrated": {
+        "threshold": -3.56948184867041,
+        "metrics": {
+          "accuracy": 0.9696521739130435,
+          "auc": 0.9965484615384615,
+          "precision": 0.9647876681275502,
+          "recall": 0.9821538461538462,
+          "f1": 0.9733933063962796,
+          "fpr": 0.0466,
+          "tp": 12768,
+          "fp": 466,
+          "tn": 9534,
+          "fn": 232
+        },
+        "per_source": {
+          "FFHQ": {
+            "n": 10000,
+            "predicted_fake_rate": 0.0466
+          },
+          "StyleGAN": {
+            "n": 10000,
+            "predicted_fake_rate": 0.9995
+          },
+          "StyleGAN2": {
+            "n": 1000,
+            "predicted_fake_rate": 0.78
+          },
+          "StyleGAN3": {
+            "n": 1000,
+            "predicted_fake_rate": 1.0
+          },
+          "StyleGAN3-t": {
+            "n": 1000,
+            "predicted_fake_rate": 0.993
+          }
+        },
+        "target_fpr": 0.05,
+        "calibration_fpr": 0.05
+      },
+      "fpr_verdict_vs_reference": "Improved"
+    },
+    "paper_repro": {
+      "model": "spatial_only",
+      "checkpoint": "/home/vishak/dsfnet-runs/paper_repro/spatial_only.pth",
+      "threshold": 0.0,
+      "metrics": {
+        "accuracy": 0.9696086956521739,
+        "auc": 0.9955068076923076,
+        "precision": 0.9883287018658198,
+        "recall": 0.9575384615384616,
+        "f1": 0.972689978511428,
+        "fpr": 0.0147,
+        "tp": 12448,
+        "fp": 147,
+        "tn": 9853,
+        "fn": 552
+      },
+      "per_source": {
+        "FFHQ": {
+          "n": 10000,
+          "predicted_fake_rate": 0.0147
+        },
+        "StyleGAN": {
+          "n": 10000,
+          "predicted_fake_rate": 0.9943
+        },
+        "StyleGAN2": {
+          "n": 1000,
+          "predicted_fake_rate": 0.522
+        },
+        "StyleGAN3": {
+          "n": 1000,
+          "predicted_fake_rate": 0.999
+        },
+        "StyleGAN3-t": {
+          "n": 1000,
+          "predicted_fake_rate": 0.984
+        }
+      },
+      "calibrated": {
+        "threshold": -3.371354817344116,
+        "metrics": {
+          "accuracy": 0.9656086956521739,
+          "auc": 0.9955068076923076,
+          "precision": 0.96186729212378,
+          "recall": 0.9779230769230769,
+          "f1": 0.9698287370789945,
+          "fpr": 0.0504,
+          "tp": 12713,
+          "fp": 504,
+          "tn": 9496,
+          "fn": 287
+        },
+        "per_source": {
+          "FFHQ": {
+            "n": 10000,
+            "predicted_fake_rate": 0.0504
+          },
+          "StyleGAN": {
+            "n": 10000,
+            "predicted_fake_rate": 0.9982
+          },
+          "StyleGAN2": {
+            "n": 1000,
+            "predicted_fake_rate": 0.737
+          },
+          "StyleGAN3": {
+            "n": 1000,
+            "predicted_fake_rate": 1.0
+          },
+          "StyleGAN3-t": {
+            "n": 1000,
+            "predicted_fake_rate": 0.994
+          }
+        },
+        "target_fpr": 0.05,
+        "calibration_fpr": 0.05
+      }
+    },
+    "baseline_robust": {
+      "model": "spatial_only",
+      "checkpoint": "/home/vishak/dsfnet-runs/baseline_robust/spatial_only.pth",
+      "threshold": 0.0,
+      "metrics": {
+        "accuracy": 0.9552173913043478,
+        "auc": 0.9955682769230768,
+        "precision": 0.9947098693999008,
+        "recall": 0.9256923076923077,
+        "f1": 0.9589608733763646,
+        "fpr": 0.0064,
+        "tp": 12034,
+        "fp": 64,
+        "tn": 9936,
+        "fn": 966
+      },
+      "per_source": {
+        "FFHQ": {
+          "n": 10000,
+          "predicted_fake_rate": 0.0064
+        },
+        "StyleGAN": {
+          "n": 10000,
+          "predicted_fake_rate": 0.984
+        },
+        "StyleGAN2": {
+          "n": 1000,
+          "predicted_fake_rate": 0.562
+        },
+        "StyleGAN3": {
+          "n": 1000,
+          "predicted_fake_rate": 0.911
+        },
+        "StyleGAN3-t": {
+          "n": 1000,
+          "predicted_fake_rate": 0.721
+        }
+      },
+      "calibrated": {
+        "threshold": -3.11250638861792,
+        "metrics": {
+          "accuracy": 0.9670434782608696,
+          "auc": 0.9955682769230768,
+          "precision": 0.9641340612678192,
+          "recall": 0.9780769230769231,
+          "f1": 0.9710554452420956,
+          "fpr": 0.0473,
+          "tp": 12715,
+          "fp": 473,
+          "tn": 9527,
+          "fn": 285
+        },
+        "per_source": {
+          "FFHQ": {
+            "n": 10000,
+            "predicted_fake_rate": 0.0473
+          },
+          "StyleGAN": {
+            "n": 10000,
+            "predicted_fake_rate": 0.9982
+          },
+          "StyleGAN2": {
+            "n": 1000,
+            "predicted_fake_rate": 0.847
+          },
+          "StyleGAN3": {
+            "n": 1000,
+            "predicted_fake_rate": 0.978
+          },
+          "StyleGAN3-t": {
+            "n": 1000,
+            "predicted_fake_rate": 0.908
+          }
+        },
+        "target_fpr": 0.05,
+        "calibration_fpr": 0.05
+      },
+      "fpr_verdict_vs_reference": "Improved"
+    },
+    "dsfnet_v2": {
+      "model": "dual_stream_v2",
+      "checkpoint": "/home/vishak/dsfnet-runs/dsfnet_v2/dual_stream_v2.pth",
+      "threshold": 0.0,
+      "metrics": {
+        "accuracy": 0.961,
+        "auc": 0.9960929230769231,
+        "precision": 0.9976971790443293,
+        "recall": 0.9331538461538461,
+        "f1": 0.9643467546404865,
+        "fpr": 0.0028,
+        "tp": 12131,
+        "fp": 28,
+        "tn": 9972,
+        "fn": 869
+      },
+      "per_source": {
+        "FFHQ": {
+          "n": 10000,
+          "predicted_fake_rate": 0.0028
+        },
+        "StyleGAN": {
+          "n": 10000,
+          "predicted_fake_rate": 0.9873
+        },
+        "StyleGAN2": {
+          "n": 1000,
+          "predicted_fake_rate": 0.291
+        },
+        "StyleGAN3": {
+          "n": 1000,
+          "predicted_fake_rate": 0.991
+        },
+        "StyleGAN3-t": {
+          "n": 1000,
+          "predicted_fake_rate": 0.976
+        }
+      },
+      "calibrated": {
+        "threshold": -6.314013480140137,
+        "metrics": {
+          "accuracy": 0.9686956521739131,
+          "auc": 0.9960929230769231,
+          "precision": 0.9650810483260112,
+          "recall": 0.9800769230769231,
+          "f1": 0.9725211815891917,
+          "fpr": 0.0461,
+          "tp": 12741,
+          "fp": 461,
+          "tn": 9539,
+          "fn": 259
+        },
+        "per_source": {
+          "FFHQ": {
+            "n": 10000,
+            "predicted_fake_rate": 0.0461
+          },
+          "StyleGAN": {
+            "n": 10000,
+            "predicted_fake_rate": 0.9995
+          },
+          "StyleGAN2": {
+            "n": 1000,
+            "predicted_fake_rate": 0.748
+          },
+          "StyleGAN3": {
+            "n": 1000,
+            "predicted_fake_rate": 0.999
+          },
+          "StyleGAN3-t": {
+            "n": 1000,
+            "predicted_fake_rate": 0.999
+          }
+        },
+        "target_fpr": 0.05,
+        "calibration_fpr": 0.05
+      },
+      "fpr_verdict_vs_reference": "Improved"
+    },
+    "dsfnet_v2_robust": {
+      "model": "dual_stream_v2",
+      "checkpoint": "/home/vishak/dsfnet-runs/dsfnet_v2_robust/dual_stream_v2.pth",
+      "threshold": 0.0,
+      "metrics": {
+        "accuracy": 0.9729565217391304,
+        "auc": 0.9961735461538461,
+        "precision": 0.9806616961789375,
+        "recall": 0.9713076923076923,
+        "f1": 0.9759622816509507,
+        "fpr": 0.0249,
+        "tp": 12627,
+        "fp": 249,
+        "tn": 9751,
+        "fn": 373
+      },
+      "per_source": {
+        "FFHQ": {
+          "n": 10000,
+          "predicted_fake_rate": 0.0249
+        },
+        "StyleGAN": {
+          "n": 10000,
+          "predicted_fake_rate": 0.9968
+        },
+        "StyleGAN2": {
+          "n": 1000,
+          "predicted_fake_rate": 0.826
+        },
+        "StyleGAN3": {
+          "n": 1000,
+          "predicted_fake_rate": 0.961
+        },
+        "StyleGAN3-t": {
+          "n": 1000,
+          "predicted_fake_rate": 0.872
+        }
+      },
+      "calibrated": {
+        "threshold": -0.9326953281893006,
+        "metrics": {
+          "accuracy": 0.9698260869565217,
+          "auc": 0.9961735461538461,
+          "precision": 0.9674111212397447,
+          "recall": 0.9796153846153847,
+          "f1": 0.9734750038220455,
+          "fpr": 0.0429,
+          "tp": 12735,
+          "fp": 429,
+          "tn": 9571,
+          "fn": 265
+        },
+        "per_source": {
+          "FFHQ": {
+            "n": 10000,
+            "predicted_fake_rate": 0.0429
+          },
+          "StyleGAN": {
+            "n": 10000,
+            "predicted_fake_rate": 0.9982
+          },
+          "StyleGAN2": {
+            "n": 1000,
+            "predicted_fake_rate": 0.871
+          },
+          "StyleGAN3": {
+            "n": 1000,
+            "predicted_fake_rate": 0.974
+          },
+          "StyleGAN3-t": {
+            "n": 1000,
+            "predicted_fake_rate": 0.908
+          }
+        },
+        "target_fpr": 0.05,
+        "calibration_fpr": 0.05
+      },
+      "fpr_verdict_vs_reference": "Flagged"
+    }
+  }
+}

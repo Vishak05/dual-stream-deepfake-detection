@@ -1,0 +1,1006 @@
+{
+  "test_manifest": "/home/vishak/dsfnet-data/manifests/test_perturbed_manifest.csv",
+  "reference": "paper_repro",
+  "runs": {
+    "baseline_original": {
+      "model": "spatial_only",
+      "checkpoint": "/home/vishak/dsfnet-runs/baseline_original/spatial_only.pth",
+      "threshold": 0.0,
+      "metrics": {
+        "accuracy": 0.7215217391304348,
+        "auc": 0.8303032769230769,
+        "precision": 0.9849977937932048,
+        "recall": 0.5151538461538462,
+        "f1": 0.6764988130713673,
+        "fpr": 0.0102,
+        "tp": 6697,
+        "fp": 102,
+        "tn": 9898,
+        "fn": 6303
+      },
+      "per_source": {
+        "FFHQ": {
+          "n": 10000,
+          "predicted_fake_rate": 0.0102
+        },
+        "StyleGAN": {
+          "n": 10000,
+          "predicted_fake_rate": 0.6321
+        },
+        "StyleGAN2": {
+          "n": 1000,
+          "predicted_fake_rate": 0.222
+        },
+        "StyleGAN3": {
+          "n": 1000,
+          "predicted_fake_rate": 0.084
+        },
+        "StyleGAN3-t": {
+          "n": 1000,
+          "predicted_fake_rate": 0.07
+        }
+      },
+      "per_op": {
+        "gaussian_blur": {
+          "n": 4679,
+          "accuracy": 0.7901260953195127,
+          "fpr": 0.00249500998003992,
+          "detection_rate": 0.6347663551401869
+        },
+        "jpeg": {
+          "n": 4607,
+          "accuracy": 0.8923377469068808,
+          "fpr": 0.03819095477386935,
+          "detection_rate": 0.8395108903324418
+        },
+        "mirror": {
+          "n": 4531,
+          "accuracy": 0.5766938865592585,
+          "fpr": 0.0,
+          "detection_rate": 0.2525331254871395
+        },
+        "rotation": {
+          "n": 4514,
+          "accuracy": 0.44838280903854677,
+          "fpr": 0.0,
+          "detection_rate": 0.006384676775738229
+        },
+        "scaling": {
+          "n": 4669,
+          "accuracy": 0.8888412936388949,
+          "fpr": 0.010329562223315297,
+          "detection_rate": 0.8110773899848255
+        }
+      },
+      "calibrated": {
+        "threshold": -4.252218245459961,
+        "metrics": {
+          "accuracy": 0.745,
+          "auc": 0.8303032769230769,
+          "precision": 0.9442161623708131,
+          "recall": 0.5833076923076923,
+          "f1": 0.7211259569207361,
+          "fpr": 0.0448,
+          "tp": 7583,
+          "fp": 448,
+          "tn": 9552,
+          "fn": 5417
+        },
+        "per_source": {
+          "FFHQ": {
+            "n": 10000,
+            "predicted_fake_rate": 0.0448
+          },
+          "StyleGAN": {
+            "n": 10000,
+            "predicted_fake_rate": 0.6711
+          },
+          "StyleGAN2": {
+            "n": 1000,
+            "predicted_fake_rate": 0.419
+          },
+          "StyleGAN3": {
+            "n": 1000,
+            "predicted_fake_rate": 0.242
+          },
+          "StyleGAN3-t": {
+            "n": 1000,
+            "predicted_fake_rate": 0.211
+          }
+        },
+        "per_op": {
+          "gaussian_blur": {
+            "n": 4679,
+            "accuracy": 0.861508869416542,
+            "fpr": 0.025449101796407185,
+            "detection_rate": 0.776822429906542
+          },
+          "jpeg": {
+            "n": 4607,
+            "accuracy": 0.8923377469068808,
+            "fpr": 0.12864321608040202,
+            "detection_rate": 0.9082919373328239
+          },
+          "mirror": {
+            "n": 4531,
+            "accuracy": 0.5855219598322666,
+            "fpr": 0.011195928753180661,
+            "detection_rate": 0.2766952455183164
+          },
+          "rotation": {
+            "n": 4514,
+            "accuracy": 0.46677004873726186,
+            "fpr": 0.00149402390438247,
+            "detection_rate": 0.040702314445331206
+          },
+          "scaling": {
+            "n": 4669,
+            "accuracy": 0.9066181195116727,
+            "fpr": 0.05705853418593212,
+            "detection_rate": 0.8786039453717754
+          }
+        },
+        "target_fpr": 0.05,
+        "calibration_fpr": 0.05
+      },
+      "fpr_verdict_vs_reference": "Improved"
+    },
+    "baseline_augmented": {
+      "model": "spatial_only",
+      "checkpoint": "/home/vishak/dsfnet-runs/baseline_augmented/spatial_only.pth",
+      "threshold": 0.0,
+      "metrics": {
+        "accuracy": 0.7913043478260869,
+        "auc": 0.8904284192307693,
+        "precision": 0.9749768303985171,
+        "recall": 0.6473846153846153,
+        "f1": 0.7781065088757396,
+        "fpr": 0.0216,
+        "tp": 8416,
+        "fp": 216,
+        "tn": 9784,
+        "fn": 4584
+      },
+      "per_source": {
+        "FFHQ": {
+          "n": 10000,
+          "predicted_fake_rate": 0.0216
+        },
+        "StyleGAN": {
+          "n": 10000,
+          "predicted_fake_rate": 0.6621
+        },
+        "StyleGAN2": {
+          "n": 1000,
+          "predicted_fake_rate": 0.394
+        },
+        "StyleGAN3": {
+          "n": 1000,
+          "predicted_fake_rate": 0.702
+        },
+        "StyleGAN3-t": {
+          "n": 1000,
+          "predicted_fake_rate": 0.699
+        }
+      },
+      "per_op": {
+        "gaussian_blur": {
+          "n": 4679,
+          "accuracy": 0.9040393246420175,
+          "fpr": 0.015968063872255488,
+          "detection_rate": 0.8441121495327103
+        },
+        "jpeg": {
+          "n": 4607,
+          "accuracy": 0.9661384849142609,
+          "fpr": 0.05075376884422111,
+          "detection_rate": 0.9789835689721055
+        },
+        "mirror": {
+          "n": 4531,
+          "accuracy": 0.6164202162877952,
+          "fpr": 0.0061068702290076335,
+          "detection_rate": 0.3273577552611068
+        },
+        "rotation": {
+          "n": 4514,
+          "accuracy": 0.4918032786885246,
+          "fpr": 0.004482071713147411,
+          "detection_rate": 0.08818834796488428
+        },
+        "scaling": {
+          "n": 4669,
+          "accuracy": 0.9650888841293639,
+          "fpr": 0.030496802754549926,
+          "detection_rate": 0.9616843702579666
+        }
+      },
+      "calibrated": {
+        "threshold": -2.091628312064575,
+        "metrics": {
+          "accuracy": 0.802,
+          "auc": 0.8904284192307693,
+          "precision": 0.9465003171917953,
+          "recall": 0.6886153846153846,
+          "f1": 0.7972214800961795,
+          "fpr": 0.0506,
+          "tp": 8952,
+          "fp": 506,
+          "tn": 9494,
+          "fn": 4048
+        },
+        "per_source": {
+          "FFHQ": {
+            "n": 10000,
+            "predicted_fake_rate": 0.0506
+          },
+          "StyleGAN": {
+            "n": 10000,
+            "predicted_fake_rate": 0.6989
+          },
+          "StyleGAN2": {
+            "n": 1000,
+            "predicted_fake_rate": 0.499
+          },
+          "StyleGAN3": {
+            "n": 1000,
+            "predicted_fake_rate": 0.734
+          },
+          "StyleGAN3-t": {
+            "n": 1000,
+            "predicted_fake_rate": 0.73
+          }
+        },
+        "per_op": {
+          "gaussian_blur": {
+            "n": 4679,
+            "accuracy": 0.9286172259029707,
+            "fpr": 0.043912175648702596,
+            "detection_rate": 0.9080373831775701
+          },
+          "jpeg": {
+            "n": 4607,
+            "accuracy": 0.9444323855003256,
+            "fpr": 0.11256281407035176,
+            "detection_rate": 0.9877722583110432
+          },
+          "mirror": {
+            "n": 4531,
+            "accuracy": 0.6256896932244538,
+            "fpr": 0.01272264631043257,
+            "detection_rate": 0.3487918939984411
+          },
+          "rotation": {
+            "n": 4514,
+            "accuracy": 0.5416482055826318,
+            "fpr": 0.013944223107569721,
+            "detection_rate": 0.18555466879489227
+          },
+          "scaling": {
+            "n": 4669,
+            "accuracy": 0.9573784536303277,
+            "fpr": 0.06935563207083129,
+            "detection_rate": 0.9779969650986343
+          }
+        },
+        "target_fpr": 0.05,
+        "calibration_fpr": 0.05
+      },
+      "fpr_verdict_vs_reference": "Improved"
+    },
+    "dual_augmented": {
+      "model": "dual_stream",
+      "checkpoint": "/home/vishak/dsfnet-runs/dual_augmented/dual_stream.pth",
+      "threshold": 0.0,
+      "metrics": {
+        "accuracy": 0.7890434782608695,
+        "auc": 0.8464048730769231,
+        "precision": 0.9698961937716263,
+        "recall": 0.6468461538461538,
+        "f1": 0.776095985233041,
+        "fpr": 0.0261,
+        "tp": 8409,
+        "fp": 261,
+        "tn": 9739,
+        "fn": 4591
+      },
+      "per_source": {
+        "FFHQ": {
+          "n": 10000,
+          "predicted_fake_rate": 0.0261
+        },
+        "StyleGAN": {
+          "n": 10000,
+          "predicted_fake_rate": 0.6614
+        },
+        "StyleGAN2": {
+          "n": 1000,
+          "predicted_fake_rate": 0.421
+        },
+        "StyleGAN3": {
+          "n": 1000,
+          "predicted_fake_rate": 0.681
+        },
+        "StyleGAN3-t": {
+          "n": 1000,
+          "predicted_fake_rate": 0.693
+        }
+      },
+      "per_op": {
+        "gaussian_blur": {
+          "n": 4679,
+          "accuracy": 0.8944218850181663,
+          "fpr": 0.018463073852295408,
+          "detection_rate": 0.8291588785046728
+        },
+        "jpeg": {
+          "n": 4607,
+          "accuracy": 0.9574560451486868,
+          "fpr": 0.0728643216080402,
+          "detection_rate": 0.9805120366832251
+        },
+        "mirror": {
+          "n": 4531,
+          "accuracy": 0.6153167071286691,
+          "fpr": 0.005089058524173028,
+          "detection_rate": 0.3246297739672642
+        },
+        "rotation": {
+          "n": 4514,
+          "accuracy": 0.4935755427558706,
+          "fpr": 0.00199203187250996,
+          "detection_rate": 0.0893854748603352
+        },
+        "scaling": {
+          "n": 4669,
+          "accuracy": 0.9715142428785607,
+          "fpr": 0.031972454500737824,
+          "detection_rate": 0.9742033383915023
+        }
+      },
+      "calibrated": {
+        "threshold": -1.3281431188120116,
+        "metrics": {
+          "accuracy": 0.7929565217391304,
+          "auc": 0.8464048730769231,
+          "precision": 0.9512489044697634,
+          "recall": 0.667923076923077,
+          "f1": 0.7847975415762835,
+          "fpr": 0.0445,
+          "tp": 8683,
+          "fp": 445,
+          "tn": 9555,
+          "fn": 4317
+        },
+        "per_source": {
+          "FFHQ": {
+            "n": 10000,
+            "predicted_fake_rate": 0.0445
+          },
+          "StyleGAN": {
+            "n": 10000,
+            "predicted_fake_rate": 0.6794
+          },
+          "StyleGAN2": {
+            "n": 1000,
+            "predicted_fake_rate": 0.485
+          },
+          "StyleGAN3": {
+            "n": 1000,
+            "predicted_fake_rate": 0.697
+          },
+          "StyleGAN3-t": {
+            "n": 1000,
+            "predicted_fake_rate": 0.707
+          }
+        },
+        "per_op": {
+          "gaussian_blur": {
+            "n": 4679,
+            "accuracy": 0.9130156016242786,
+            "fpr": 0.035429141716566866,
+            "detection_rate": 0.874392523364486
+          },
+          "jpeg": {
+            "n": 4607,
+            "accuracy": 0.9444323855003256,
+            "fpr": 0.11105527638190955,
+            "detection_rate": 0.9866259075277035
+          },
+          "mirror": {
+            "n": 4531,
+            "accuracy": 0.617303023615096,
+            "fpr": 0.00916030534351145,
+            "detection_rate": 0.33125487139516757
+          },
+          "rotation": {
+            "n": 4514,
+            "accuracy": 0.5137350465219318,
+            "fpr": 0.00597609561752988,
+            "detection_rate": 0.1288906624102155
+          },
+          "scaling": {
+            "n": 4669,
+            "accuracy": 0.9635896337545513,
+            "fpr": 0.060501721593703886,
+            "detection_rate": 0.9821699544764795
+          }
+        },
+        "target_fpr": 0.05,
+        "calibration_fpr": 0.05
+      },
+      "fpr_verdict_vs_reference": "Improved"
+    },
+    "paper_repro": {
+      "model": "spatial_only",
+      "checkpoint": "/home/vishak/dsfnet-runs/paper_repro/spatial_only.pth",
+      "threshold": 0.0,
+      "metrics": {
+        "accuracy": 0.8436086956521739,
+        "auc": 0.9198778999999999,
+        "precision": 0.8053120332489123,
+        "recall": 0.9539230769230769,
+        "f1": 0.8733406105848798,
+        "fpr": 0.2998,
+        "tp": 12401,
+        "fp": 2998,
+        "tn": 7002,
+        "fn": 599
+      },
+      "per_source": {
+        "FFHQ": {
+          "n": 10000,
+          "predicted_fake_rate": 0.2998
+        },
+        "StyleGAN": {
+          "n": 10000,
+          "predicted_fake_rate": 0.968
+        },
+        "StyleGAN2": {
+          "n": 1000,
+          "predicted_fake_rate": 0.731
+        },
+        "StyleGAN3": {
+          "n": 1000,
+          "predicted_fake_rate": 0.998
+        },
+        "StyleGAN3-t": {
+          "n": 1000,
+          "predicted_fake_rate": 0.992
+        }
+      },
+      "per_op": {
+        "gaussian_blur": {
+          "n": 4679,
+          "accuracy": 0.9106646719384484,
+          "fpr": 0.03093812375249501,
+          "detection_rate": 0.8669158878504672
+        },
+        "jpeg": {
+          "n": 4607,
+          "accuracy": 0.9413935315823746,
+          "fpr": 0.11809045226130653,
+          "detection_rate": 0.9866259075277035
+        },
+        "mirror": {
+          "n": 4531,
+          "accuracy": 0.7647318472743324,
+          "fpr": 0.505852417302799,
+          "detection_rate": 0.9719407638347622
+        },
+        "rotation": {
+          "n": 4514,
+          "accuracy": 0.6364643331856447,
+          "fpr": 0.7918326693227091,
+          "detection_rate": 0.9796488427773344
+        },
+        "scaling": {
+          "n": 4669,
+          "accuracy": 0.956735917755408,
+          "fpr": 0.057550418101328084,
+          "detection_rate": 0.9677541729893778
+        }
+      },
+      "calibrated": {
+        "threshold": 14.286774636314941,
+        "metrics": {
+          "accuracy": 0.7234782608695652,
+          "auc": 0.9198778999999999,
+          "precision": 0.9362680683311432,
+          "recall": 0.5480769230769231,
+          "f1": 0.6914119359534207,
+          "fpr": 0.0485,
+          "tp": 7125,
+          "fp": 485,
+          "tn": 9515,
+          "fn": 5875
+        },
+        "per_source": {
+          "FFHQ": {
+            "n": 10000,
+            "predicted_fake_rate": 0.0485
+          },
+          "StyleGAN": {
+            "n": 10000,
+            "predicted_fake_rate": 0.5242
+          },
+          "StyleGAN2": {
+            "n": 1000,
+            "predicted_fake_rate": 0.202
+          },
+          "StyleGAN3": {
+            "n": 1000,
+            "predicted_fake_rate": 0.847
+          },
+          "StyleGAN3-t": {
+            "n": 1000,
+            "predicted_fake_rate": 0.834
+          }
+        },
+        "per_op": {
+          "gaussian_blur": {
+            "n": 4679,
+            "accuracy": 0.6465056636033341,
+            "fpr": 0.0,
+            "detection_rate": 0.38168224299065423
+          },
+          "jpeg": {
+            "n": 4607,
+            "accuracy": 0.8695463425222487,
+            "fpr": 0.0,
+            "detection_rate": 0.7703477264042797
+          },
+          "mirror": {
+            "n": 4531,
+            "accuracy": 0.6901346281174133,
+            "fpr": 0.07633587786259542,
+            "detection_rate": 0.5113016367887763
+          },
+          "rotation": {
+            "n": 4514,
+            "accuracy": 0.6023482498892335,
+            "fpr": 0.16683266932270915,
+            "detection_rate": 0.41739824421388666
+          },
+          "scaling": {
+            "n": 4669,
+            "accuracy": 0.8059541657742557,
+            "fpr": 0.0,
+            "detection_rate": 0.6562974203338392
+          }
+        },
+        "target_fpr": 0.05,
+        "calibration_fpr": 0.05
+      }
+    },
+    "baseline_robust": {
+      "model": "spatial_only",
+      "checkpoint": "/home/vishak/dsfnet-runs/baseline_robust/spatial_only.pth",
+      "threshold": 0.0,
+      "metrics": {
+        "accuracy": 0.9520434782608695,
+        "auc": 0.9919403384615385,
+        "precision": 0.9790609648063139,
+        "recall": 0.9351538461538461,
+        "f1": 0.9566038478183893,
+        "fpr": 0.026,
+        "tp": 12157,
+        "fp": 260,
+        "tn": 9740,
+        "fn": 843
+      },
+      "per_source": {
+        "FFHQ": {
+          "n": 10000,
+          "predicted_fake_rate": 0.026
+        },
+        "StyleGAN": {
+          "n": 10000,
+          "predicted_fake_rate": 0.9764
+        },
+        "StyleGAN2": {
+          "n": 1000,
+          "predicted_fake_rate": 0.69
+        },
+        "StyleGAN3": {
+          "n": 1000,
+          "predicted_fake_rate": 0.923
+        },
+        "StyleGAN3-t": {
+          "n": 1000,
+          "predicted_fake_rate": 0.78
+        }
+      },
+      "per_op": {
+        "gaussian_blur": {
+          "n": 4679,
+          "accuracy": 0.9450737337037829,
+          "fpr": 0.018962075848303395,
+          "detection_rate": 0.9181308411214953
+        },
+        "jpeg": {
+          "n": 4607,
+          "accuracy": 0.9578901671369655,
+          "fpr": 0.04874371859296482,
+          "detection_rate": 0.9629346580053496
+        },
+        "mirror": {
+          "n": 4531,
+          "accuracy": 0.9602736702714633,
+          "fpr": 0.012213740458015267,
+          "detection_rate": 0.9392049883086516
+        },
+        "rotation": {
+          "n": 4514,
+          "accuracy": 0.939964554718653,
+          "fpr": 0.02041832669322709,
+          "detection_rate": 0.9082202713487629
+        },
+        "scaling": {
+          "n": 4669,
+          "accuracy": 0.9569500963803812,
+          "fpr": 0.029513034923757994,
+          "detection_rate": 0.9465098634294385
+        }
+      },
+      "calibrated": {
+        "threshold": -1.1485617150797118,
+        "metrics": {
+          "accuracy": 0.9555652173913044,
+          "auc": 0.9919403384615385,
+          "precision": 0.961402157164869,
+          "recall": 0.9599230769230769,
+          "f1": 0.9606620477290223,
+          "fpr": 0.0501,
+          "tp": 12479,
+          "fp": 501,
+          "tn": 9499,
+          "fn": 521
+        },
+        "per_source": {
+          "FFHQ": {
+            "n": 10000,
+            "predicted_fake_rate": 0.0501
+          },
+          "StyleGAN": {
+            "n": 10000,
+            "predicted_fake_rate": 0.9872
+          },
+          "StyleGAN2": {
+            "n": 1000,
+            "predicted_fake_rate": 0.793
+          },
+          "StyleGAN3": {
+            "n": 1000,
+            "predicted_fake_rate": 0.957
+          },
+          "StyleGAN3-t": {
+            "n": 1000,
+            "predicted_fake_rate": 0.857
+          }
+        },
+        "per_op": {
+          "gaussian_blur": {
+            "n": 4679,
+            "accuracy": 0.9523402436418038,
+            "fpr": 0.041916167664670656,
+            "detection_rate": 0.9480373831775701
+          },
+          "jpeg": {
+            "n": 4607,
+            "accuracy": 0.9500759713479487,
+            "fpr": 0.08844221105527639,
+            "detection_rate": 0.9793656858998854
+          },
+          "mirror": {
+            "n": 4531,
+            "accuracy": 0.966453321562569,
+            "fpr": 0.024936386768447838,
+            "detection_rate": 0.9598597038191738
+          },
+          "rotation": {
+            "n": 4514,
+            "accuracy": 0.9472751439964555,
+            "fpr": 0.044820717131474105,
+            "detection_rate": 0.9409417398244214
+          },
+          "scaling": {
+            "n": 4669,
+            "accuracy": 0.9616620261297922,
+            "fpr": 0.05017215937038859,
+            "detection_rate": 0.9707890743550834
+          }
+        },
+        "target_fpr": 0.05,
+        "calibration_fpr": 0.05
+      },
+      "fpr_verdict_vs_reference": "Improved"
+    },
+    "dsfnet_v2": {
+      "model": "dual_stream_v2",
+      "checkpoint": "/home/vishak/dsfnet-runs/dsfnet_v2/dual_stream_v2.pth",
+      "threshold": 0.0,
+      "metrics": {
+        "accuracy": 0.7771304347826087,
+        "auc": 0.8817205692307692,
+        "precision": 0.9918790604697652,
+        "recall": 0.6106923076923076,
+        "f1": 0.7559512473814511,
+        "fpr": 0.0065,
+        "tp": 7939,
+        "fp": 65,
+        "tn": 9935,
+        "fn": 5061
+      },
+      "per_source": {
+        "FFHQ": {
+          "n": 10000,
+          "predicted_fake_rate": 0.0065
+        },
+        "StyleGAN": {
+          "n": 10000,
+          "predicted_fake_rate": 0.6304
+        },
+        "StyleGAN2": {
+          "n": 1000,
+          "predicted_fake_rate": 0.266
+        },
+        "StyleGAN3": {
+          "n": 1000,
+          "predicted_fake_rate": 0.674
+        },
+        "StyleGAN3-t": {
+          "n": 1000,
+          "predicted_fake_rate": 0.695
+        }
+      },
+      "per_op": {
+        "gaussian_blur": {
+          "n": 4679,
+          "accuracy": 0.8685616584740329,
+          "fpr": 0.001996007984031936,
+          "detection_rate": 0.771588785046729
+        },
+        "jpeg": {
+          "n": 4607,
+          "accuracy": 0.9698285218146299,
+          "fpr": 0.015577889447236181,
+          "detection_rate": 0.9587313717997707
+        },
+        "mirror": {
+          "n": 4531,
+          "accuracy": 0.6095784595012138,
+          "fpr": 0.0015267175572519084,
+          "detection_rate": 0.3117692907248636
+        },
+        "rotation": {
+          "n": 4514,
+          "accuracy": 0.4678777137793531,
+          "fpr": 0.00149402390438247,
+          "detection_rate": 0.0426975259377494
+        },
+        "scaling": {
+          "n": 4669,
+          "accuracy": 0.9569500963803812,
+          "fpr": 0.011805213969503197,
+          "detection_rate": 0.9328528072837633
+        }
+      },
+      "calibrated": {
+        "threshold": -4.623754977179932,
+        "metrics": {
+          "accuracy": 0.8036521739130434,
+          "auc": 0.8817205692307692,
+          "precision": 0.9472796288485871,
+          "recall": 0.691076923076923,
+          "f1": 0.799146059420032,
+          "fpr": 0.05,
+          "tp": 8984,
+          "fp": 500,
+          "tn": 9500,
+          "fn": 4016
+        },
+        "per_source": {
+          "FFHQ": {
+            "n": 10000,
+            "predicted_fake_rate": 0.05
+          },
+          "StyleGAN": {
+            "n": 10000,
+            "predicted_fake_rate": 0.701
+          },
+          "StyleGAN2": {
+            "n": 1000,
+            "predicted_fake_rate": 0.498
+          },
+          "StyleGAN3": {
+            "n": 1000,
+            "predicted_fake_rate": 0.728
+          },
+          "StyleGAN3-t": {
+            "n": 1000,
+            "predicted_fake_rate": 0.748
+          }
+        },
+        "per_op": {
+          "gaussian_blur": {
+            "n": 4679,
+            "accuracy": 0.9262662962171404,
+            "fpr": 0.04790419161676647,
+            "detection_rate": 0.9069158878504673
+          },
+          "jpeg": {
+            "n": 4607,
+            "accuracy": 0.948990666377252,
+            "fpr": 0.09949748743718594,
+            "detection_rate": 0.9858616736721437
+          },
+          "mirror": {
+            "n": 4531,
+            "accuracy": 0.6354005738247628,
+            "fpr": 0.008142493638676845,
+            "detection_rate": 0.36243180046765394
+          },
+          "rotation": {
+            "n": 4514,
+            "accuracy": 0.5414266725742135,
+            "fpr": 0.01743027888446215,
+            "detection_rate": 0.1879489225857941
+          },
+          "scaling": {
+            "n": 4669,
+            "accuracy": 0.9541657742557292,
+            "fpr": 0.07624200688637482,
+            "detection_rate": 0.9776176024279211
+          }
+        },
+        "target_fpr": 0.05,
+        "calibration_fpr": 0.05
+      },
+      "fpr_verdict_vs_reference": "Improved"
+    },
+    "dsfnet_v2_robust": {
+      "model": "dual_stream_v2",
+      "checkpoint": "/home/vishak/dsfnet-runs/dsfnet_v2_robust/dual_stream_v2.pth",
+      "threshold": 0.0,
+      "metrics": {
+        "accuracy": 0.9551739130434782,
+        "auc": 0.9922673538461539,
+        "precision": 0.9484451105282877,
+        "recall": 0.9736153846153847,
+        "f1": 0.9608654393623078,
+        "fpr": 0.0688,
+        "tp": 12657,
+        "fp": 688,
+        "tn": 9312,
+        "fn": 343
+      },
+      "per_source": {
+        "FFHQ": {
+          "n": 10000,
+          "predicted_fake_rate": 0.0688
+        },
+        "StyleGAN": {
+          "n": 10000,
+          "predicted_fake_rate": 0.9911
+        },
+        "StyleGAN2": {
+          "n": 1000,
+          "predicted_fake_rate": 0.888
+        },
+        "StyleGAN3": {
+          "n": 1000,
+          "predicted_fake_rate": 0.967
+        },
+        "StyleGAN3-t": {
+          "n": 1000,
+          "predicted_fake_rate": 0.891
+        }
+      },
+      "per_op": {
+        "gaussian_blur": {
+          "n": 4679,
+          "accuracy": 0.9544774524471041,
+          "fpr": 0.06936127744510978,
+          "detection_rate": 0.9723364485981308
+        },
+        "jpeg": {
+          "n": 4607,
+          "accuracy": 0.9492077273713914,
+          "fpr": 0.10050251256281408,
+          "detection_rate": 0.9870080244554834
+        },
+        "mirror": {
+          "n": 4531,
+          "accuracy": 0.9609357757669389,
+          "fpr": 0.049872773536895676,
+          "detection_rate": 0.9692127825409197
+        },
+        "rotation": {
+          "n": 4514,
+          "accuracy": 0.9501550731058928,
+          "fpr": 0.05776892430278884,
+          "detection_rate": 0.9565043894652833
+        },
+        "scaling": {
+          "n": 4669,
+          "accuracy": 0.9610194902548725,
+          "fpr": 0.06640432857845549,
+          "detection_rate": 0.9821699544764795
+        }
+      },
+      "calibrated": {
+        "threshold": 0.7668100605474243,
+        "metrics": {
+          "accuracy": 0.9579130434782609,
+          "auc": 0.9922673538461539,
+          "precision": 0.9638396299151889,
+          "recall": 0.9616153846153846,
+          "f1": 0.9627262225644975,
+          "fpr": 0.0469,
+          "tp": 12501,
+          "fp": 469,
+          "tn": 9531,
+          "fn": 499
+        },
+        "per_source": {
+          "FFHQ": {
+            "n": 10000,
+            "predicted_fake_rate": 0.0469
+          },
+          "StyleGAN": {
+            "n": 10000,
+            "predicted_fake_rate": 0.9862
+          },
+          "StyleGAN2": {
+            "n": 1000,
+            "predicted_fake_rate": 0.83
+          },
+          "StyleGAN3": {
+            "n": 1000,
+            "predicted_fake_rate": 0.952
+          },
+          "StyleGAN3-t": {
+            "n": 1000,
+            "predicted_fake_rate": 0.857
+          }
+        },
+        "per_op": {
+          "gaussian_blur": {
+            "n": 4679,
+            "accuracy": 0.9583244282966445,
+            "fpr": 0.04590818363273453,
+            "detection_rate": 0.9614953271028037
+          },
+          "jpeg": {
+            "n": 4607,
+            "accuracy": 0.959409594095941,
+            "fpr": 0.06934673366834171,
+            "detection_rate": 0.9812762705387849
+          },
+          "mirror": {
+            "n": 4531,
+            "accuracy": 0.9613771794305893,
+            "fpr": 0.03307888040712468,
+            "detection_rate": 0.9571317225253313
+          },
+          "rotation": {
+            "n": 4514,
+            "accuracy": 0.9479397430217102,
+            "fpr": 0.036354581673306775,
+            "detection_rate": 0.9353551476456504
+          },
+          "scaling": {
+            "n": 4669,
+            "accuracy": 0.9623045620047119,
+            "fpr": 0.04968027545499262,
+            "detection_rate": 0.9715477996965098
+          }
+        },
+        "target_fpr": 0.05,
+        "calibration_fpr": 0.05
+      },
+      "fpr_verdict_vs_reference": "Improved"
+    }
+  }
+}
