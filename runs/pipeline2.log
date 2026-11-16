@@ -1,0 +1,100 @@
+[pipeline2] inputs ready: 1000 StyleGAN3-t, 1000 StyleGAN2 test images
+original_manifest.csv: 100000 images (50000 real, 50000 fake)
+augmented_manifest.csv: 105000 images (50000 real, 55000 fake)
+test_manifest.csv: 21000 images (10000 real, 11000 fake)
+paper_augmented_manifest.csv: 105000 images (50000 real, 55000 fake)
+test_full_manifest.csv: 23000 images
+wrote /home/vishak/dsfnet-data/manifests/test_perturbed_manifest_ops.csv
+wrote 23000 images to /home/vishak/dsfnet-data/test_perturbed and /home/vishak/dsfnet-data/manifests/test_perturbed_manifest.csv
+[pipeline2] training paper_repro
+epoch 1: train_loss=0.1757 val_loss=0.0708 val_acc=0.9731
+epoch 2: train_loss=0.0693 val_loss=0.0385 val_acc=0.9862
+epoch 3: train_loss=0.0476 val_loss=0.0484 val_acc=0.9822
+epoch 4: train_loss=0.0375 val_loss=0.0384 val_acc=0.9859
+epoch 5: train_loss=0.0324 val_loss=0.0270 val_acc=0.9904
+epoch 6: train_loss=0.0274 val_loss=0.0260 val_acc=0.9912
+epoch 7: train_loss=0.0230 val_loss=0.0284 val_acc=0.9906
+epoch 8: train_loss=0.0231 val_loss=0.0240 val_acc=0.9916
+epoch 9: train_loss=0.0190 val_loss=0.0265 val_acc=0.9909
+epoch 10: train_loss=0.0175 val_loss=0.0265 val_acc=0.9908
+[pipeline2] training baseline_robust
+epoch 1: train_loss=0.3281 val_loss=0.1357 val_acc=0.9467
+epoch 2: train_loss=0.2077 val_loss=0.1270 val_acc=0.9498
+epoch 3: train_loss=0.1721 val_loss=0.0764 val_acc=0.9714
+epoch 4: train_loss=0.1499 val_loss=0.0816 val_acc=0.9698
+epoch 5: train_loss=0.1390 val_loss=0.1080 val_acc=0.9594
+epoch 6: train_loss=0.1240 val_loss=0.0519 val_acc=0.9805
+epoch 7: train_loss=0.1160 val_loss=0.0621 val_acc=0.9763
+epoch 8: train_loss=0.1107 val_loss=0.0411 val_acc=0.9853
+epoch 9: train_loss=0.1036 val_loss=0.0634 val_acc=0.9758
+epoch 10: train_loss=0.0972 val_loss=0.0404 val_acc=0.9858
+[pipeline2] training dsfnet_v2_robust
+epoch 1: train_loss=0.3290 val_loss=0.2377 val_acc=0.9069
+epoch 2: train_loss=0.2069 val_loss=0.1342 val_acc=0.9468
+epoch 3: train_loss=0.1733 val_loss=0.1510 val_acc=0.9425
+epoch 4: train_loss=0.1523 val_loss=0.0745 val_acc=0.9720
+epoch 5: train_loss=0.1396 val_loss=0.0514 val_acc=0.9806
+epoch 6: train_loss=0.1284 val_loss=0.0555 val_acc=0.9791
+epoch 7: train_loss=0.1202 val_loss=0.0510 val_acc=0.9813
+epoch 8: train_loss=0.1124 val_loss=0.0437 val_acc=0.9846
+epoch 9: train_loss=0.1057 val_loss=0.0449 val_acc=0.9830
+epoch 10: train_loss=0.1009 val_loss=0.0502 val_acc=0.9816
+[pipeline2] training dsfnet_v2
+epoch 1: train_loss=0.1727 val_loss=0.0671 val_acc=0.9752
+epoch 2: train_loss=0.0726 val_loss=0.0632 val_acc=0.9779
+epoch 3: train_loss=0.0491 val_loss=0.0419 val_acc=0.9850
+epoch 4: train_loss=0.0396 val_loss=0.1181 val_acc=0.9598
+epoch 5: train_loss=0.0321 val_loss=0.0371 val_acc=0.9875
+epoch 6: train_loss=0.0282 val_loss=0.0251 val_acc=0.9907
+epoch 7: train_loss=0.0243 val_loss=0.0221 val_acc=0.9922
+epoch 8: train_loss=0.0208 val_loss=0.0188 val_acc=0.9931
+epoch 9: train_loss=0.0201 val_loss=0.0183 val_acc=0.9940
+epoch 10: train_loss=0.0183 val_loss=0.0217 val_acc=0.9928
+[pipeline2] evaluating on the perturbed (base-paper protocol) test set
+baseline_original: acc=0.7215 auc=0.8303 fpr=0.0102 | calibrated: fpr=0.0448 recall=0.5833
+baseline_augmented: acc=0.7913 auc=0.8904 fpr=0.0216 | calibrated: fpr=0.0506 recall=0.6886
+dual_augmented: acc=0.7890 auc=0.8464 fpr=0.0261 | calibrated: fpr=0.0445 recall=0.6679
+paper_repro: acc=0.8436 auc=0.9166 fpr=0.2998 | calibrated: fpr=0.0491 recall=0.5502
+baseline_robust: acc=0.9520 auc=0.9919 fpr=0.0260 | calibrated: fpr=0.0501 recall=0.9599
+dsfnet_v2: acc=0.7771 auc=0.8817 fpr=0.0065 | calibrated: fpr=0.0500 recall=0.6911
+dsfnet_v2_robust: acc=0.9552 auc=0.9923 fpr=0.0688 | calibrated: fpr=0.0469 recall=0.9616
+[pipeline2] evaluating on the clean test set
+baseline_original: acc=0.8809 auc=0.9681 fpr=0.0031 | calibrated: fpr=0.0516 recall=0.8712
+baseline_augmented: acc=0.9724 auc=0.9966 fpr=0.0080 | calibrated: fpr=0.0507 recall=0.9829
+dual_augmented: acc=0.9733 auc=0.9965 fpr=0.0105 | calibrated: fpr=0.0466 recall=0.9822
+paper_repro: acc=0.9696 auc=0.9955 fpr=0.0147 | calibrated: fpr=0.0504 recall=0.9779
+baseline_robust: acc=0.9552 auc=0.9956 fpr=0.0064 | calibrated: fpr=0.0473 recall=0.9781
+dsfnet_v2: acc=0.9610 auc=0.9961 fpr=0.0028 | calibrated: fpr=0.0461 recall=0.9801
+dsfnet_v2_robust: acc=0.9730 auc=0.9962 fpr=0.0249 | calibrated: fpr=0.0429 recall=0.9796
+[pipeline2] explanations
+[1/15] wrote explanation(s) for /home/vishak/dsfnet-data/test_perturbed/000000_FFHQ_00001.jpg
+[2/15] wrote explanation(s) for /home/vishak/dsfnet-data/test_perturbed/000001_FFHQ_00004.jpg
+[3/15] wrote explanation(s) for /home/vishak/dsfnet-data/test_perturbed/000002_FFHQ_00007.jpg
+[4/15] wrote explanation(s) for /home/vishak/dsfnet-data/test_perturbed/010000_StyleGAN_00276TOPP4.jpg
+[5/15] wrote explanation(s) for /home/vishak/dsfnet-data/test_perturbed/010001_StyleGAN_008BYSE725.jpg
+[6/15] wrote explanation(s) for /home/vishak/dsfnet-data/test_perturbed/010002_StyleGAN_009ZTJ3621.jpg
+[7/15] wrote explanation(s) for /home/vishak/dsfnet-data/test_perturbed/020000_StyleGAN3_stylegan3_100000.jpg
+[8/15] wrote explanation(s) for /home/vishak/dsfnet-data/test_perturbed/020001_StyleGAN3_stylegan3_100001.jpg
+[9/15] wrote explanation(s) for /home/vishak/dsfnet-data/test_perturbed/020002_StyleGAN3_stylegan3_100002.jpg
+[10/15] wrote explanation(s) for /home/vishak/dsfnet-data/test_perturbed/021000_StyleGAN3-t_stylegan3_200000.jpg
+[11/15] wrote explanation(s) for /home/vishak/dsfnet-data/test_perturbed/021001_StyleGAN3-t_stylegan3_200001.jpg
+[12/15] wrote explanation(s) for /home/vishak/dsfnet-data/test_perturbed/021002_StyleGAN3-t_stylegan3_200002.jpg
+[13/15] wrote explanation(s) for /home/vishak/dsfnet-data/test_perturbed/022000_StyleGAN2_stylegan3_200000.jpg
+[14/15] wrote explanation(s) for /home/vishak/dsfnet-data/test_perturbed/022001_StyleGAN2_stylegan3_200001.jpg
+[15/15] wrote explanation(s) for /home/vishak/dsfnet-data/test_perturbed/022002_StyleGAN2_stylegan3_200002.jpg
+[1/15] wrote explanation(s) for /home/vishak/dsfnet-data/test_perturbed/000000_FFHQ_00001.jpg
+[2/15] wrote explanation(s) for /home/vishak/dsfnet-data/test_perturbed/000001_FFHQ_00004.jpg
+[3/15] wrote explanation(s) for /home/vishak/dsfnet-data/test_perturbed/000002_FFHQ_00007.jpg
+[4/15] wrote explanation(s) for /home/vishak/dsfnet-data/test_perturbed/010000_StyleGAN_00276TOPP4.jpg
+[5/15] wrote explanation(s) for /home/vishak/dsfnet-data/test_perturbed/010001_StyleGAN_008BYSE725.jpg
+[6/15] wrote explanation(s) for /home/vishak/dsfnet-data/test_perturbed/010002_StyleGAN_009ZTJ3621.jpg
+[7/15] wrote explanation(s) for /home/vishak/dsfnet-data/test_perturbed/020000_StyleGAN3_stylegan3_100000.jpg
+[8/15] wrote explanation(s) for /home/vishak/dsfnet-data/test_perturbed/020001_StyleGAN3_stylegan3_100001.jpg
+[9/15] wrote explanation(s) for /home/vishak/dsfnet-data/test_perturbed/020002_StyleGAN3_stylegan3_100002.jpg
+[10/15] wrote explanation(s) for /home/vishak/dsfnet-data/test_perturbed/021000_StyleGAN3-t_stylegan3_200000.jpg
+[11/15] wrote explanation(s) for /home/vishak/dsfnet-data/test_perturbed/021001_StyleGAN3-t_stylegan3_200001.jpg
+[12/15] wrote explanation(s) for /home/vishak/dsfnet-data/test_perturbed/021002_StyleGAN3-t_stylegan3_200002.jpg
+[13/15] wrote explanation(s) for /home/vishak/dsfnet-data/test_perturbed/022000_StyleGAN2_stylegan3_200000.jpg
+[14/15] wrote explanation(s) for /home/vishak/dsfnet-data/test_perturbed/022001_StyleGAN2_stylegan3_200001.jpg
+[15/15] wrote explanation(s) for /home/vishak/dsfnet-data/test_perturbed/022002_StyleGAN2_stylegan3_200002.jpg
+[pipeline2] DONE

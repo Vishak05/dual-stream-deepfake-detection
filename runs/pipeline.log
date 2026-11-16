@@ -1,0 +1,79 @@
+[pipeline] generation done: 5000 train, 1000 test StyleGAN3 images
+original_manifest.csv: 100000 images (50000 real, 50000 fake)
+augmented_manifest.csv: 105000 images (50000 real, 55000 fake)
+test_manifest.csv: 21000 images (10000 real, 11000 fake)
+[pipeline] training baseline_original
+epoch 1: train_loss=0.1659 val_loss=0.0569 val_acc=0.9782
+epoch 2: train_loss=0.0653 val_loss=0.0256 val_acc=0.9903
+epoch 3: train_loss=0.0431 val_loss=0.0285 val_acc=0.9899
+epoch 4: train_loss=0.0335 val_loss=0.0298 val_acc=0.9893
+epoch 5: train_loss=0.0306 val_loss=0.0237 val_acc=0.9919
+epoch 6: train_loss=0.0250 val_loss=0.0340 val_acc=0.9885
+epoch 7: train_loss=0.0241 val_loss=0.0167 val_acc=0.9946
+epoch 8: train_loss=0.0177 val_loss=0.0179 val_acc=0.9943
+epoch 9: train_loss=0.0185 val_loss=0.0196 val_acc=0.9932
+epoch 10: train_loss=0.0166 val_loss=0.0160 val_acc=0.9949
+[pipeline] training baseline_augmented
+epoch 1: train_loss=0.1741 val_loss=0.0592 val_acc=0.9782
+epoch 2: train_loss=0.0682 val_loss=0.0354 val_acc=0.9868
+epoch 3: train_loss=0.0489 val_loss=0.0483 val_acc=0.9819
+epoch 4: train_loss=0.0372 val_loss=0.0676 val_acc=0.9756
+epoch 5: train_loss=0.0324 val_loss=0.0336 val_acc=0.9874
+epoch 6: train_loss=0.0274 val_loss=0.0445 val_acc=0.9846
+epoch 7: train_loss=0.0230 val_loss=0.0213 val_acc=0.9922
+epoch 8: train_loss=0.0224 val_loss=0.0183 val_acc=0.9936
+epoch 9: train_loss=0.0198 val_loss=0.0245 val_acc=0.9913
+epoch 10: train_loss=0.0179 val_loss=0.0188 val_acc=0.9936
+[pipeline] training dual_original
+epoch 1: train_loss=0.1690 val_loss=0.0490 val_acc=0.9824
+epoch 2: train_loss=0.0646 val_loss=0.0389 val_acc=0.9856
+epoch 3: train_loss=0.0460 val_loss=0.0478 val_acc=0.9828
+epoch 4: train_loss=0.0376 val_loss=0.0241 val_acc=0.9920
+epoch 5: train_loss=0.0280 val_loss=0.0859 val_acc=0.9724
+epoch 6: train_loss=0.0254 val_loss=0.0186 val_acc=0.9936
+epoch 7: train_loss=0.0232 val_loss=0.0162 val_acc=0.9944
+epoch 8: train_loss=0.0203 val_loss=0.0227 val_acc=0.9923
+epoch 9: train_loss=0.0188 val_loss=0.0237 val_acc=0.9913
+epoch 10: train_loss=0.0166 val_loss=0.0214 val_acc=0.9926
+[pipeline] training dual_augmented
+epoch 1: train_loss=0.1732 val_loss=0.0635 val_acc=0.9766
+epoch 2: train_loss=0.0732 val_loss=0.0902 val_acc=0.9659
+epoch 3: train_loss=0.0503 val_loss=0.0417 val_acc=0.9851
+epoch 4: train_loss=0.0384 val_loss=0.0655 val_acc=0.9787
+epoch 5: train_loss=0.0326 val_loss=0.0241 val_acc=0.9914
+epoch 6: train_loss=0.0274 val_loss=0.0271 val_acc=0.9909
+epoch 7: train_loss=0.0251 val_loss=0.0529 val_acc=0.9813
+epoch 8: train_loss=0.0206 val_loss=0.0217 val_acc=0.9923
+epoch 9: train_loss=0.0199 val_loss=0.0187 val_acc=0.9935
+epoch 10: train_loss=0.0170 val_loss=0.0210 val_acc=0.9931
+[pipeline] evaluating
+baseline_original: acc=0.9500 auc=0.9852 fpr=0.0031
+baseline_augmented: acc=0.9940 auc=0.9998 fpr=0.0080
+dual_original: acc=0.9509 auc=0.9847 fpr=0.0102
+dual_augmented: acc=0.9932 auc=0.9998 fpr=0.0105
+[pipeline] explanations
+[1/12] wrote explanation(s) for /home/vishak/dsfnet-data/real_vs_fake/real-vs-fake/test/real/00001.jpg
+[2/12] wrote explanation(s) for /home/vishak/dsfnet-data/real_vs_fake/real-vs-fake/test/real/00004.jpg
+[3/12] wrote explanation(s) for /home/vishak/dsfnet-data/real_vs_fake/real-vs-fake/test/real/00007.jpg
+[4/12] wrote explanation(s) for /home/vishak/dsfnet-data/real_vs_fake/real-vs-fake/test/real/00016.jpg
+[5/12] wrote explanation(s) for /home/vishak/dsfnet-data/real_vs_fake/real-vs-fake/test/fake/00276TOPP4.jpg
+[6/12] wrote explanation(s) for /home/vishak/dsfnet-data/real_vs_fake/real-vs-fake/test/fake/008BYSE725.jpg
+[7/12] wrote explanation(s) for /home/vishak/dsfnet-data/real_vs_fake/real-vs-fake/test/fake/009ZTJ3621.jpg
+[8/12] wrote explanation(s) for /home/vishak/dsfnet-data/real_vs_fake/real-vs-fake/test/fake/00F8LKY6JC.jpg
+[9/12] wrote explanation(s) for /home/vishak/dsfnet-data/stylegan3_test/stylegan3_100000.jpg
+[10/12] wrote explanation(s) for /home/vishak/dsfnet-data/stylegan3_test/stylegan3_100001.jpg
+[11/12] wrote explanation(s) for /home/vishak/dsfnet-data/stylegan3_test/stylegan3_100002.jpg
+[12/12] wrote explanation(s) for /home/vishak/dsfnet-data/stylegan3_test/stylegan3_100003.jpg
+[1/12] wrote explanation(s) for /home/vishak/dsfnet-data/real_vs_fake/real-vs-fake/test/real/00001.jpg
+[2/12] wrote explanation(s) for /home/vishak/dsfnet-data/real_vs_fake/real-vs-fake/test/real/00004.jpg
+[3/12] wrote explanation(s) for /home/vishak/dsfnet-data/real_vs_fake/real-vs-fake/test/real/00007.jpg
+[4/12] wrote explanation(s) for /home/vishak/dsfnet-data/real_vs_fake/real-vs-fake/test/real/00016.jpg
+[5/12] wrote explanation(s) for /home/vishak/dsfnet-data/real_vs_fake/real-vs-fake/test/fake/00276TOPP4.jpg
+[6/12] wrote explanation(s) for /home/vishak/dsfnet-data/real_vs_fake/real-vs-fake/test/fake/008BYSE725.jpg
+[7/12] wrote explanation(s) for /home/vishak/dsfnet-data/real_vs_fake/real-vs-fake/test/fake/009ZTJ3621.jpg
+[8/12] wrote explanation(s) for /home/vishak/dsfnet-data/real_vs_fake/real-vs-fake/test/fake/00F8LKY6JC.jpg
+[9/12] wrote explanation(s) for /home/vishak/dsfnet-data/stylegan3_test/stylegan3_100000.jpg
+[10/12] wrote explanation(s) for /home/vishak/dsfnet-data/stylegan3_test/stylegan3_100001.jpg
+[11/12] wrote explanation(s) for /home/vishak/dsfnet-data/stylegan3_test/stylegan3_100002.jpg
+[12/12] wrote explanation(s) for /home/vishak/dsfnet-data/stylegan3_test/stylegan3_100003.jpg
+[pipeline] DONE

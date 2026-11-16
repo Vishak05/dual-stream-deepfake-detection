@@ -5,7 +5,14 @@ __pycache__/
 venv/
 /data/
 /checkpoints/
-/runs/
+/runs/*
+!/runs/*/
+!/runs/*.json
+!/runs/*.npz
+!/runs/*.png
+!/runs/*.py
+!/runs/*.sh
+!/runs/*.log
 *.pkl
 *.pth
 *.pt

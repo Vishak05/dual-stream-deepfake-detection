@@ -1,0 +1,17 @@
+[reeval] perturbed
+baseline_original: acc=0.7215 auc=0.8303 fpr=0.0102 | calibrated: fpr=0.0448 recall=0.5833
+baseline_augmented: acc=0.7913 auc=0.8904 fpr=0.0216 | calibrated: fpr=0.0506 recall=0.6886
+dual_augmented: acc=0.7890 auc=0.8464 fpr=0.0261 | calibrated: fpr=0.0445 recall=0.6679
+paper_repro: acc=0.8436 auc=0.9199 fpr=0.2998 | calibrated: fpr=0.0485 recall=0.5481
+baseline_robust: acc=0.9520 auc=0.9919 fpr=0.0260 | calibrated: fpr=0.0501 recall=0.9599
+dsfnet_v2: acc=0.7771 auc=0.8817 fpr=0.0065 | calibrated: fpr=0.0500 recall=0.6911
+dsfnet_v2_robust: acc=0.9552 auc=0.9923 fpr=0.0688 | calibrated: fpr=0.0469 recall=0.9616
+[reeval] clean
+baseline_original: acc=0.8809 auc=0.9681 fpr=0.0031 | calibrated: fpr=0.0516 recall=0.8712
+baseline_augmented: acc=0.9724 auc=0.9966 fpr=0.0080 | calibrated: fpr=0.0507 recall=0.9829
+dual_augmented: acc=0.9733 auc=0.9965 fpr=0.0105 | calibrated: fpr=0.0466 recall=0.9822
+paper_repro: acc=0.9696 auc=0.9955 fpr=0.0147 | calibrated: fpr=0.0504 recall=0.9779
+baseline_robust: acc=0.9552 auc=0.9956 fpr=0.0064 | calibrated: fpr=0.0473 recall=0.9781
+dsfnet_v2: acc=0.9610 auc=0.9961 fpr=0.0028 | calibrated: fpr=0.0461 recall=0.9801
+dsfnet_v2_robust: acc=0.9730 auc=0.9962 fpr=0.0249 | calibrated: fpr=0.0429 recall=0.9796
+[reeval] DONE
