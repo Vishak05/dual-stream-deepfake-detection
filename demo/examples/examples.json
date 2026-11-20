@@ -1,0 +1,32 @@
+[
+ {
+  "file": "1_FFHQ_00001.jpg",
+  "perturbation": "None (clean image)",
+  "label": "Real face, clean"
+ },
+ {
+  "file": "2_FFHQ_00001.jpg",
+  "perturbation": "Rotation 135°",
+  "label": "Real face, rotated 135°"
+ },
+ {
+  "file": "3_FFHQ_00001.jpg",
+  "perturbation": "Mirror (vertical)",
+  "label": "Real face, mirrored vertically"
+ },
+ {
+  "file": "4_StyleGAN_00MZYXAT77.jpg",
+  "perturbation": "Gaussian blur (kernel 9)",
+  "label": "StyleGAN fake, blurred (kernel 9)"
+ },
+ {
+  "file": "5_StyleGAN2_stylegan3_200005.jpg",
+  "perturbation": "None (clean image)",
+  "label": "StyleGAN2 fake (not in training data)"
+ },
+ {
+  "file": "6_StyleGAN3-t_stylegan3_200082.jpg",
+  "perturbation": "Rotation 90°",
+  "label": "StyleGAN3-T fake (not in training data), rotated 90°"
+ }
+]
